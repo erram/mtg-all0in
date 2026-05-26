@@ -35,7 +35,7 @@ Created: 2026-05-26
 
 | Task | Description | DoD | Depends | Status |
 |------|------------|-----|---------|--------|
-| 4.1 | Mobile-responsive layout audit — search, detail, collection pages | All pages pass Lighthouse mobile score >= 85 | Phase 3 | cc:WIP |
+| 4.1 | Mobile-responsive layout audit — search, detail, collection pages | All pages pass Lighthouse mobile score >= 85 | Phase 3 | cc:完了 [b6092d2] |
 | 4.2 | Error boundaries + loading skeletons on all pages | No white screen on API error; skeleton visible during load | Phase 3 | cc:TODO |
 | 4.3 | Vercel deployment + env vars setup (DATABASE_URL, NEXTAUTH_SECRET) | Production deploy accessible; migrations run on deploy | Phase 3 | cc:TODO |
 | 4.4 | README with setup instructions + architecture diagram | New dev can run `npm run dev` following README alone | 4.3 | cc:TODO |
