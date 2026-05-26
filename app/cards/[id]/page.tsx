@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ScryfallApiError } from '@/lib/scryfall'
 import { getCardWithPrices } from '@/lib/price-cache'
 import type { CardDisplayData } from '@/lib/price-cache'
+import { AddToCollectionForm } from '@/components/AddToCollectionForm'
 
 interface CardDetailPageProps {
   params: { id: string }
@@ -96,6 +97,7 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
           )}
 
           <PriceTable prices={data.prices} fromCache={data.fromCache} />
+          <AddToCollectionForm scryfallId={data.scryfallId} />
         </div>
       </div>
     </main>
