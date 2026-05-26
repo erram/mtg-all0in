@@ -5,3 +5,9 @@
 {"file":"prisma/schema.prisma","action":"Write","timestamp":"2026-05-26T11:38:11Z","important":false}
 {"file":".gitignore","action":"Edit","timestamp":"2026-05-26T11:38:34Z","important":false}
 {"file":".github/workflows/ci.yml","action":"Write","timestamp":"2026-05-26T11:39:18Z","important":false}
+{"file":"lib/prisma.ts","action":"Write","timestamp":"2026-05-26T11:40:07Z","important":false}
+{"file":"lib/auth.ts","action":"Write","timestamp":"2026-05-26T11:40:14Z","important":false}
+{"file":"app/api/auth/[...nextauth]/route.ts","action":"Write","timestamp":"2026-05-26T11:40:18Z","important":false}
+{"file":"types/next-auth.d.ts","action":"Write","timestamp":"2026-05-26T11:40:23Z","important":false}
+{"file":"app/(auth)/login/page.tsx","action":"Write","timestamp":"2026-05-26T11:40:34Z","important":false}
+{"file":"middleware.ts","action":"Write","timestamp":"2026-05-26T11:40:38Z","important":false}
