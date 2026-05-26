@@ -11,3 +11,4 @@
 {"file":"types/next-auth.d.ts","action":"Write","timestamp":"2026-05-26T11:40:23Z","important":false}
 {"file":"app/(auth)/login/page.tsx","action":"Write","timestamp":"2026-05-26T11:40:34Z","important":false}
 {"file":"middleware.ts","action":"Write","timestamp":"2026-05-26T11:40:38Z","important":false}
+{"file":".npmrc","action":"Write","timestamp":"2026-05-26T11:53:47Z","important":false}

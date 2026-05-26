@@ -10,7 +10,7 @@ Created: 2026-05-26
 |------|------------|-----|---------|--------|
 | 1.1 | Init Next.js 14 project with TypeScript, Tailwind, ESLint, Prettier | `npm run build` exits 0, no TS errors | - | cc:完了 [adf6c61] |
 | 1.2 | Set up PostgreSQL + Prisma ORM; define User, Card, CardPrice, CollectionEntry schema | `prisma migrate dev` runs clean; `prisma generate` passes | 1.1 | cc:完了 [2dd06ef] |
-| 1.3 | Implement NextAuth.js (email/password) with JWT session strategy | Login/logout flow works; protected routes return 401 without session | 1.2 | cc:WIP |
+| 1.3 | Implement NextAuth.js (email/password) with JWT session strategy | Login/logout flow works; protected routes return 401 without session | 1.2 | cc:完了 [f6b0fe1] |
 | 1.4 | CI: GitHub Actions workflow — lint, typecheck, test on PR | CI passes on clean branch | 1.1 | cc:完了 [3e28dd7] |
 
 ## Phase 2: Card Search & Price Display
