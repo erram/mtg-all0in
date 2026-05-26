@@ -25,3 +25,5 @@
 {"file":"app/api/collection/route.ts","action":"Write","timestamp":"2026-05-26T12:07:06Z","important":false}
 {"file":"app/api/collection/[entryId]/route.ts","action":"Write","timestamp":"2026-05-26T12:07:16Z","important":false}
 {"file":"components/AddToCollectionForm.tsx","action":"Write","timestamp":"2026-05-26T12:08:09Z","important":false}
+{"file":"components/CollectionGrid.tsx","action":"Write","timestamp":"2026-05-26T12:09:33Z","important":false}
+{"file":"app/collection/page.tsx","action":"Write","timestamp":"2026-05-26T12:09:43Z","important":false}

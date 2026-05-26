@@ -27,8 +27,8 @@ Created: 2026-05-26
 | Task | Description | DoD | Depends | Status |
 |------|------------|-----|---------|--------|
 | 3.1 | Collection API routes — GET /api/collection, POST /api/collection, DELETE /api/collection/:id | Authenticated CRUD works; unauthenticated returns 401 | 1.3, 1.2 | cc:完了 [6691359] |
-| 3.2 | "Add to collection" button on card detail page with quantity + foil selectors | Collection entry saved to DB; UI updates without page reload | 3.1, 2.3 | cc:WIP |
-| 3.3 | Collection dashboard `/collection` — card grid with quantities, foil badge, current price, total value | Total value calculated in real-time from cached prices; sorted by value desc | 3.1, 2.4 | cc:TODO |
+| 3.2 | "Add to collection" button on card detail page with quantity + foil selectors | Collection entry saved to DB; UI updates without page reload | 3.1, 2.3 | cc:完了 [d060468] |
+| 3.3 | Collection dashboard `/collection` — card grid with quantities, foil badge, current price, total value | Total value calculated in real-time from cached prices; sorted by value desc | 3.1, 2.4 | cc:WIP |
 | 3.4 | Remove / update quantity in collection | Entry updated or deleted; total value recalculates | 3.3 | cc:TODO |
 
 ## Phase 4: Polish & Deploy
