@@ -4,3 +4,4 @@
 {"file":".prettierignore","action":"Write","timestamp":"2026-05-26T11:36:52Z","important":false}
 {"file":"prisma/schema.prisma","action":"Write","timestamp":"2026-05-26T11:38:11Z","important":false}
 {"file":".gitignore","action":"Edit","timestamp":"2026-05-26T11:38:34Z","important":false}
+{"file":".github/workflows/ci.yml","action":"Write","timestamp":"2026-05-26T11:39:18Z","important":false}
