@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  passwordHash String
+  createdAt    DateTime          @default(now())
+  collection   CollectionEntry[]
+}
+
+model Card {
+  scryfallId String        @id
+  name       String
+  setCode    String
+  imageUri   String
+  oracleText String
+  updatedAt  DateTime      @updatedAt
+  prices     CardPrice[]
+  collection CollectionEntry[]
+}
+
+model CardPrice {
+  id         String   @id @default(cuid())
+  scryfallId String
+  usd        Decimal? @db.Decimal(10, 2)
+  usdFoil    Decimal? @db.Decimal(10, 2)
+  eur        Decimal? @db.Decimal(10, 2)
+  fetchedAt  DateTime @default(now())
+  card       Card     @relation(fields: [scryfallId], references: [scryfallId])
+}
+
+model CollectionEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  scryfallId String
+  quantity   Int      @default(1)
+  foil       Boolean  @default(false)
+  notes      String?
+  addedAt    DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card       Card     @relation(fields: [scryfallId], references: [scryfallId])
+}
