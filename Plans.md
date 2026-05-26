@@ -18,8 +18,8 @@ Created: 2026-05-26
 | Task | Description | DoD | Depends | Status |
 |------|------------|-----|---------|--------|
 | 2.1 | Scryfall API client module (typed, rate-limit-aware 100ms delay between calls) | Unit tests for client; mock Scryfall in tests | 1.1 | cc:完了 [9af5169] |
-| 2.2 | Card search page `/search` — query input → Scryfall `/cards/search` → card grid | Search returns results; empty state handled; error state handled | 2.1 | cc:WIP |
-| 2.3 | Card detail page `/cards/[id]` — image, oracle text, price table (USD/EUR/foil) | All price fields displayed; 404 on unknown id | 2.1 | cc:TODO |
+| 2.2 | Card search page `/search` — query input → Scryfall `/cards/search` → card grid | Search returns results; empty state handled; error state handled | 2.1 | cc:完了 [ebb232f] |
+| 2.3 | Card detail page `/cards/[id]` — image, oracle text, price table (USD/EUR/foil) | All price fields displayed; 404 on unknown id | 2.1 | cc:WIP |
 | 2.4 | Price caching layer — store Scryfall prices in CardPrice table, refresh if > 24h old | DB hit instead of Scryfall API when cache is fresh; stale data triggers background refresh | 2.1, 1.2 | cc:TODO |
 
 ## Phase 3: Collection Management
