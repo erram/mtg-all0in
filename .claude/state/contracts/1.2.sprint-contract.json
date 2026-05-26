@@ -1,0 +1,58 @@
+{
+  "schema_version": "sprint-contract.v1",
+  "generated_at": "2026-05-26T11:35:26Z",
+  "source": {
+    "plans_file": "Plans.md",
+    "task_id": "1.2"
+  },
+  "task": {
+    "id": "1.2",
+    "title": "Set up PostgreSQL + Prisma ORM; define User, Card, CardPrice, CollectionEntry schema",
+    "definition_of_done": "`prisma migrate dev` runs clean; `prisma generate` passes",
+    "depends_on": [
+      "1.1"
+    ],
+    "status_at_generation": "cc:TODO"
+  },
+  "contract": {
+    "checks": [
+      {
+        "id": "dod-primary",
+        "source": "Plans.md.DoD",
+        "description": "`prisma migrate dev` runs clean; `prisma generate` passes"
+      }
+    ],
+    "non_goals": [],
+    "runtime_validation": [],
+    "browser_validation": [],
+    "risk_flags": [
+      "state-migration"
+    ],
+    "tdd_required": false,
+    "test_framework": "none",
+    "test_todo_list": [],
+    "skip_tdd_reason": null
+  },
+  "advisor": {
+    "enabled": true,
+    "mode": "on-demand",
+    "max_consults": 3,
+    "retry_threshold": 2,
+    "pre_escalation_consult": true,
+    "triggers": [
+      "state-migration"
+    ],
+    "model_policy": {
+      "claude_default": "opus",
+      "codex_default": "gpt-5.4"
+    }
+  },
+  "review": {
+    "status": "draft",
+    "reviewer_profile": "static",
+    "max_iterations": 3,
+    "reviewer_notes": [],
+    "gaps": [],
+    "followups": []
+  }
+}

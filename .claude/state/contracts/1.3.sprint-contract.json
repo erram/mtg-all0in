@@ -1,0 +1,60 @@
+{
+  "schema_version": "sprint-contract.v1",
+  "generated_at": "2026-05-26T11:35:26Z",
+  "source": {
+    "plans_file": "Plans.md",
+    "task_id": "1.3"
+  },
+  "task": {
+    "id": "1.3",
+    "title": "Implement NextAuth.js (email/password) with JWT session strategy",
+    "definition_of_done": "Login/logout flow works; protected routes return 401 without session",
+    "depends_on": [
+      "1.2"
+    ],
+    "status_at_generation": "cc:TODO"
+  },
+  "contract": {
+    "checks": [
+      {
+        "id": "dod-primary",
+        "source": "Plans.md.DoD",
+        "description": "Login/logout flow works; protected routes return 401 without session"
+      }
+    ],
+    "non_goals": [],
+    "runtime_validation": [],
+    "browser_validation": [],
+    "risk_flags": [
+      "security-sensitive",
+      "state-migration"
+    ],
+    "tdd_required": false,
+    "test_framework": "none",
+    "test_todo_list": [],
+    "skip_tdd_reason": null
+  },
+  "advisor": {
+    "enabled": true,
+    "mode": "on-demand",
+    "max_consults": 3,
+    "retry_threshold": 2,
+    "pre_escalation_consult": true,
+    "triggers": [
+      "security-sensitive",
+      "state-migration"
+    ],
+    "model_policy": {
+      "claude_default": "opus",
+      "codex_default": "gpt-5.4"
+    }
+  },
+  "review": {
+    "status": "draft",
+    "reviewer_profile": "static",
+    "max_iterations": 3,
+    "reviewer_notes": [],
+    "gaps": [],
+    "followups": []
+  }
+}

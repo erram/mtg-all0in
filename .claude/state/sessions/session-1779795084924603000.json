@@ -1,0 +1,42 @@
+{
+  "changes_this_session": [],
+  "cwd": "/Users/molnarricsi/Documents/ASH/mtg-trading-platform",
+  "duration_minutes": 0,
+  "ended_at": "2026-05-26T11:31:37Z",
+  "event_seq": 1,
+  "fork_count": 0,
+  "git": {
+    "branch": "(no git)",
+    "last_commit": "none",
+    "uncommitted_changes": 0
+  },
+  "harness_mem": {
+    "healthy": true,
+    "last_checked": "2026-05-26T11:31:24Z",
+    "last_error": ""
+  },
+  "intent": "literal",
+  "last_event_id": "event-000001",
+  "memory_logged": true,
+  "orchestration": {
+    "max_state_retries": 3,
+    "retry_backoff_seconds": 10
+  },
+  "parent_session_id": null,
+  "plans": {
+    "completed_tasks": 0,
+    "exists": true,
+    "last_modified": 1779794936,
+    "pending_tasks": 0,
+    "todo_tasks": 16,
+    "wip_tasks": 0
+  },
+  "project_name": "mtg-trading-platform",
+  "prompt_seq": 2,
+  "resume_token": "resume-1779795084924612000",
+  "session_id": "session-1779795084924603000",
+  "started_at": "2026-05-26T11:31:24Z",
+  "state": "stopped",
+  "state_version": 1,
+  "updated_at": "2026-05-26T11:31:29Z"
+}
