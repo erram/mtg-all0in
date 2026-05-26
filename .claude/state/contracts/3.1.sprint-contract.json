@@ -1,0 +1,75 @@
+{
+  "schema_version": "sprint-contract.v1",
+  "generated_at": "2026-05-26T12:06:39Z",
+  "source": {
+    "plans_file": "Plans.md",
+    "task_id": "3.1"
+  },
+  "task": {
+    "id": "3.1",
+    "title": "Collection API routes — GET /api/collection, POST /api/collection, DELETE /api/collection/:id",
+    "definition_of_done": "Authenticated CRUD works; unauthenticated returns 401",
+    "depends_on": [
+      "1.3",
+      "1.2"
+    ],
+    "status_at_generation": "cc:TODO"
+  },
+  "contract": {
+    "checks": [
+      {
+        "id": "dod-primary",
+        "source": "Plans.md.DoD",
+        "description": "Authenticated CRUD works; unauthenticated returns 401"
+      }
+    ],
+    "non_goals": [],
+    "runtime_validation": [
+      {
+        "id": "",
+        "label": "package-test",
+        "command": "CI=true npm test"
+      },
+      {
+        "id": "",
+        "label": "package-lint",
+        "command": "npm run lint"
+      },
+      {
+        "id": "",
+        "label": "package-typecheck",
+        "command": "npm run typecheck"
+      }
+    ],
+    "browser_validation": [],
+    "risk_flags": [
+      "security-sensitive"
+    ],
+    "tdd_required": false,
+    "test_framework": "vitest",
+    "test_todo_list": [],
+    "skip_tdd_reason": null
+  },
+  "advisor": {
+    "enabled": true,
+    "mode": "on-demand",
+    "max_consults": 3,
+    "retry_threshold": 2,
+    "pre_escalation_consult": true,
+    "triggers": [
+      "security-sensitive"
+    ],
+    "model_policy": {
+      "claude_default": "opus",
+      "codex_default": "gpt-5.4"
+    }
+  },
+  "review": {
+    "status": "draft",
+    "reviewer_profile": "runtime",
+    "max_iterations": 3,
+    "reviewer_notes": [],
+    "gaps": [],
+    "followups": []
+  }
+}

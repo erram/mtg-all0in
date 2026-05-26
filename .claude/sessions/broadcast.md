@@ -7,3 +7,9 @@
 
 ## 2026-05-26T11:40:23Z [b5c4d21e-85a]
 📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/types/next-auth.d.ts` が変更されました: パターン 'types/' にマッチ
+
+## 2026-05-26T12:07:06Z [b5c4d21e-85a]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/collection/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-05-26T12:07:16Z [b5c4d21e-85a]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/collection/[entryId]/route.ts` が変更されました: パターン 'api/' にマッチ

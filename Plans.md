@@ -20,13 +20,13 @@ Created: 2026-05-26
 | 2.1 | Scryfall API client module (typed, rate-limit-aware 100ms delay between calls) | Unit tests for client; mock Scryfall in tests | 1.1 | cc:完了 [9af5169] |
 | 2.2 | Card search page `/search` — query input → Scryfall `/cards/search` → card grid | Search returns results; empty state handled; error state handled | 2.1 | cc:完了 [ebb232f] |
 | 2.3 | Card detail page `/cards/[id]` — image, oracle text, price table (USD/EUR/foil) | All price fields displayed; 404 on unknown id | 2.1 | cc:完了 [c392e5a] |
-| 2.4 | Price caching layer — store Scryfall prices in CardPrice table, refresh if > 24h old | DB hit instead of Scryfall API when cache is fresh; stale data triggers background refresh | 2.1, 1.2 | cc:WIP |
+| 2.4 | Price caching layer — store Scryfall prices in CardPrice table, refresh if > 24h old | DB hit instead of Scryfall API when cache is fresh; stale data triggers background refresh | 2.1, 1.2 | cc:完了 [3d0298c] |
 
 ## Phase 3: Collection Management
 
 | Task | Description | DoD | Depends | Status |
 |------|------------|-----|---------|--------|
-| 3.1 | Collection API routes — GET /api/collection, POST /api/collection, DELETE /api/collection/:id | Authenticated CRUD works; unauthenticated returns 401 | 1.3, 1.2 | cc:TODO |
+| 3.1 | Collection API routes — GET /api/collection, POST /api/collection, DELETE /api/collection/:id | Authenticated CRUD works; unauthenticated returns 401 | 1.3, 1.2 | cc:WIP |
 | 3.2 | "Add to collection" button on card detail page with quantity + foil selectors | Collection entry saved to DB; UI updates without page reload | 3.1, 2.3 | cc:TODO |
 | 3.3 | Collection dashboard `/collection` — card grid with quantities, foil badge, current price, total value | Total value calculated in real-time from cached prices; sorted by value desc | 3.1, 2.4 | cc:TODO |
 | 3.4 | Remove / update quantity in collection | Entry updated or deleted; total value recalculates | 3.3 | cc:TODO |
