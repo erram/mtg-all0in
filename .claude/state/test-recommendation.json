@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-26T11:59:06Z",
-  "changed_file": "lib/scryfall/__tests__/client.test.ts",
+  "timestamp": "2026-05-26T12:00:42Z",
+  "changed_file": "components/SearchForm.tsx",
   "test_command": "npx vitest run --reporter=verbose",
   "related_test": "",
   "recommendation": "テストの実行を推奨します"
