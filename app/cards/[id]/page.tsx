@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getCardById, getCardImageUri, ScryfallApiError } from '@/lib/scryfall'
-import type { ScryfallCard, ScryfallPrices } from '@/lib/scryfall'
+import { ScryfallApiError } from '@/lib/scryfall'
+import { getCardWithPrices } from '@/lib/price-cache'
+import type { CardDisplayData } from '@/lib/price-cache'
 
 interface CardDetailPageProps {
   params: { id: string }
@@ -19,55 +20,39 @@ function PriceRow({ label, value }: { label: string; value: string | null }) {
   )
 }
 
-function PriceTable({ prices }: { prices: ScryfallPrices }) {
+function PriceTable({ prices, fromCache }: { prices: CardDisplayData['prices']; fromCache: boolean }) {
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-        Prices
-      </h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Prices</h2>
+        {fromCache && (
+          <span className="text-xs text-gray-400">
+            cached {new Date(prices.fetchedAt).toLocaleDateString()}
+          </span>
+        )}
+      </div>
       <table className="w-full">
         <tbody>
           <PriceRow label="USD" value={prices.usd} />
-          <PriceRow label="USD Foil" value={prices.usd_foil} />
-          <PriceRow label="USD Etched" value={prices.usd_etched} />
+          <PriceRow label="USD Foil" value={prices.usdFoil} />
           <PriceRow label="EUR" value={prices.eur} />
-          <PriceRow label="EUR Foil" value={prices.eur_foil} />
         </tbody>
       </table>
     </div>
   )
 }
 
-function OracleText({ card }: { card: ScryfallCard }) {
-  const text =
-    card.oracle_text ??
-    card.card_faces?.map((f) => `${f.name}\n${f.oracle_text ?? ''}`).join('\n\n——\n\n')
-
-  if (!text) return null
-
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
-        Oracle Text
-      </h2>
-      <p className="whitespace-pre-wrap text-sm text-gray-800">{text}</p>
-    </div>
-  )
-}
-
 export default async function CardDetailPage({ params }: CardDetailPageProps) {
-  let card: ScryfallCard
+  let data: CardDisplayData
 
   try {
-    card = await getCardById(params.id)
+    data = await getCardWithPrices(params.id)
   } catch (err) {
     if (err instanceof ScryfallApiError && err.status === 404) {
       notFound()
     }
     throw err
   }
-
-  const imageUri = getCardImageUri(card)
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
@@ -78,12 +63,11 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
       </nav>
 
       <div className="flex flex-col gap-8 md:flex-row">
-        {/* Card image */}
         <div className="shrink-0">
-          {imageUri ? (
+          {data.imageUri ? (
             <Image
-              src={imageUri}
-              alt={card.name}
+              src={data.imageUri}
+              alt={data.name}
               width={300}
               height={420}
               className="rounded-xl shadow-lg"
@@ -96,26 +80,22 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
           )}
         </div>
 
-        {/* Details */}
         <div className="flex flex-1 flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{card.name}</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              {card.set_name} · #{card.collector_number}
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
+            <p className="mt-1 text-sm text-gray-500">{data.setCode.toUpperCase()}</p>
           </div>
 
-          <OracleText card={card} />
-          <PriceTable prices={card.prices} />
+          {data.oracleText && (
+            <div className="rounded-lg border border-gray-200 bg-white p-4">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                Oracle Text
+              </h2>
+              <p className="whitespace-pre-wrap text-sm text-gray-800">{data.oracleText}</p>
+            </div>
+          )}
 
-          <a
-            href={card.scryfall_uri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:underline"
-          >
-            View on Scryfall ↗
-          </a>
+          <PriceTable prices={data.prices} fromCache={data.fromCache} />
         </div>
       </div>
     </main>
