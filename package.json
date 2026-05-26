@@ -9,7 +9,9 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -23,7 +25,11 @@
     "react-dom": "^18"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@prisma/engines", "prisma", "unrs-resolver"]
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "prisma",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -31,12 +37,14 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vitest/coverage-v8": "^4.1.7",
     "dotenv": "^17.4.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "prettier": "^3.8.3",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }

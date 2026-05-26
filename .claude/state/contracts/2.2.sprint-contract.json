@@ -1,0 +1,69 @@
+{
+  "schema_version": "sprint-contract.v1",
+  "generated_at": "2026-05-26T11:57:26Z",
+  "source": {
+    "plans_file": "Plans.md",
+    "task_id": "2.2"
+  },
+  "task": {
+    "id": "2.2",
+    "title": "Card search page `/search` — query input → Scryfall `/cards/search` → card grid",
+    "definition_of_done": "Search returns results; empty state handled; error state handled",
+    "depends_on": [
+      "2.1"
+    ],
+    "status_at_generation": "cc:TODO"
+  },
+  "contract": {
+    "checks": [
+      {
+        "id": "dod-primary",
+        "source": "Plans.md.DoD",
+        "description": "Search returns results; empty state handled; error state handled"
+      }
+    ],
+    "non_goals": [],
+    "runtime_validation": [
+      {
+        "id": "",
+        "label": "package-lint",
+        "command": "npm run lint"
+      },
+      {
+        "id": "",
+        "label": "package-typecheck",
+        "command": "npm run typecheck"
+      }
+    ],
+    "browser_validation": [],
+    "risk_flags": [
+      "state-migration"
+    ],
+    "tdd_required": false,
+    "test_framework": "none",
+    "test_todo_list": [],
+    "skip_tdd_reason": null
+  },
+  "advisor": {
+    "enabled": true,
+    "mode": "on-demand",
+    "max_consults": 3,
+    "retry_threshold": 2,
+    "pre_escalation_consult": true,
+    "triggers": [
+      "state-migration"
+    ],
+    "model_policy": {
+      "claude_default": "opus",
+      "codex_default": "gpt-5.4"
+    }
+  },
+  "review": {
+    "status": "draft",
+    "reviewer_profile": "static",
+    "max_iterations": 3,
+    "reviewer_notes": [],
+    "gaps": [],
+    "followups": []
+  }
+}

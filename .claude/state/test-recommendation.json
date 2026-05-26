@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-05-26T11:59:06Z",
+  "changed_file": "lib/scryfall/__tests__/client.test.ts",
+  "test_command": "npx vitest run --reporter=verbose",
+  "related_test": "",
+  "recommendation": "テストの実行を推奨します"
+}

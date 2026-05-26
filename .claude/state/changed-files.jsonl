@@ -12,3 +12,8 @@
 {"file":"app/(auth)/login/page.tsx","action":"Write","timestamp":"2026-05-26T11:40:34Z","important":false}
 {"file":"middleware.ts","action":"Write","timestamp":"2026-05-26T11:40:38Z","important":false}
 {"file":".npmrc","action":"Write","timestamp":"2026-05-26T11:53:47Z","important":false}
+{"file":"vitest.config.ts","action":"Write","timestamp":"2026-05-26T11:58:16Z","important":false}
+{"file":"lib/scryfall/types.ts","action":"Write","timestamp":"2026-05-26T11:58:24Z","important":false}
+{"file":"lib/scryfall/client.ts","action":"Write","timestamp":"2026-05-26T11:58:35Z","important":false}
+{"file":"lib/scryfall/index.ts","action":"Write","timestamp":"2026-05-26T11:58:40Z","important":false}
+{"file":"lib/scryfall/__tests__/client.test.ts","action":"Write","timestamp":"2026-05-26T11:59:06Z","important":true}
