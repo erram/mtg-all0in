@@ -29,13 +29,13 @@ Created: 2026-05-26
 | 3.1 | Collection API routes — GET /api/collection, POST /api/collection, DELETE /api/collection/:id | Authenticated CRUD works; unauthenticated returns 401 | 1.3, 1.2 | cc:完了 [6691359] |
 | 3.2 | "Add to collection" button on card detail page with quantity + foil selectors | Collection entry saved to DB; UI updates without page reload | 3.1, 2.3 | cc:完了 [d060468] |
 | 3.3 | Collection dashboard `/collection` — card grid with quantities, foil badge, current price, total value | Total value calculated in real-time from cached prices; sorted by value desc | 3.1, 2.4 | cc:完了 [a7b03de] |
-| 3.4 | Remove / update quantity in collection | Entry updated or deleted; total value recalculates | 3.3 | cc:WIP |
+| 3.4 | Remove / update quantity in collection | Entry updated or deleted; total value recalculates | 3.3 | cc:完了 [70c5bf0] |
 
 ## Phase 4: Polish & Deploy
 
 | Task | Description | DoD | Depends | Status |
 |------|------------|-----|---------|--------|
-| 4.1 | Mobile-responsive layout audit — search, detail, collection pages | All pages pass Lighthouse mobile score >= 85 | Phase 3 | cc:TODO |
+| 4.1 | Mobile-responsive layout audit — search, detail, collection pages | All pages pass Lighthouse mobile score >= 85 | Phase 3 | cc:WIP |
 | 4.2 | Error boundaries + loading skeletons on all pages | No white screen on API error; skeleton visible during load | Phase 3 | cc:TODO |
 | 4.3 | Vercel deployment + env vars setup (DATABASE_URL, NEXTAUTH_SECRET) | Production deploy accessible; migrations run on deploy | Phase 3 | cc:TODO |
 | 4.4 | README with setup instructions + architecture diagram | New dev can run `npm run dev` following README alone | 4.3 | cc:TODO |

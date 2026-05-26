@@ -27,3 +27,8 @@
 {"file":"components/AddToCollectionForm.tsx","action":"Write","timestamp":"2026-05-26T12:08:09Z","important":false}
 {"file":"components/CollectionGrid.tsx","action":"Write","timestamp":"2026-05-26T12:09:33Z","important":false}
 {"file":"app/collection/page.tsx","action":"Write","timestamp":"2026-05-26T12:09:43Z","important":false}
+{"file":"next.config.mjs","action":"Write","timestamp":"2026-05-26T12:14:39Z","important":false}
+{"file":"components/Nav.tsx","action":"Write","timestamp":"2026-05-26T12:14:54Z","important":false}
+{"file":"components/Providers.tsx","action":"Write","timestamp":"2026-05-26T12:14:59Z","important":false}
+{"file":"app/layout.tsx","action":"Write","timestamp":"2026-05-26T12:15:07Z","important":false}
+{"file":"app/page.tsx","action":"Write","timestamp":"2026-05-26T12:15:20Z","important":false}
