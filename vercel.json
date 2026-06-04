@@ -1,5 +1,5 @@
 {
-  "buildCommand": "DATABASE_URL=$DATABASE_URL_UNPOOLED pnpm prisma migrate deploy && pnpm build",
+  "buildCommand": "DATABASE_URL=$DATABASE_URL_UNPOOLED pnpm prisma migrate deploy && pnpm prisma generate && pnpm build",
   "installCommand": "pnpm install",
   "framework": "nextjs"
 }
