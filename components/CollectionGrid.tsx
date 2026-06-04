@@ -18,24 +18,42 @@ export type CollectionEntry = {
   price: {
     usd: string | null
     usdFoil: string | null
+    eur: string | null
+    eurFoil: string | null
   } | null
+  listing?: {
+    id: string
+    price: string
+    currency: string
+  }
 }
 
-function entryValue(entry: CollectionEntry): number {
-  const priceStr = entry.foil ? entry.price?.usdFoil : entry.price?.usd
-  return priceStr ? parseFloat(priceStr) * entry.quantity : 0
+type Currency = 'USD' | 'EUR'
+
+const CURRENCY_CONFIG: Record<Currency, { symbol: string; regular: keyof NonNullable<CollectionEntry['price']>; foil: keyof NonNullable<CollectionEntry['price']> }> = {
+  USD: { symbol: '$', regular: 'usd', foil: 'usdFoil' },
+  EUR: { symbol: '€', regular: 'eur', foil: 'eurFoil' },
 }
 
-function totalValue(entries: CollectionEntry[]): number {
-  return entries.reduce((sum, e) => sum + entryValue(e), 0)
+function entryValue(entry: CollectionEntry, currency: Currency): number {
+  const cfg = CURRENCY_CONFIG[currency]
+  const priceStr = entry.foil ? entry.price?.[cfg.foil] : entry.price?.[cfg.regular]
+  return priceStr ? parseFloat(priceStr as string) * entry.quantity : 0
+}
+
+function totalValue(entries: CollectionEntry[], currency: Currency): number {
+  return entries.reduce((sum, e) => sum + entryValue(e, currency), 0)
 }
 
 export function CollectionGrid({ initialEntries }: { initialEntries: CollectionEntry[] }) {
   const [entries, setEntries] = useState<CollectionEntry[]>(initialEntries)
   const [pending, setPending] = useState<Record<string, boolean>>({})
+  const [currency, setCurrency] = useState<Currency>('USD')
 
-  const sorted = [...entries].sort((a, b) => entryValue(b) - entryValue(a))
-  const total = totalValue(sorted)
+  const cfg = CURRENCY_CONFIG[currency]
+  const sorted = [...entries].sort((a, b) => entryValue(b, currency) - entryValue(a, currency))
+  const total = totalValue(sorted, currency)
+  const totalCopies = entries.reduce((s, e) => s + e.quantity, 0)
 
   const updateQuantity = useCallback(async (id: string, delta: number) => {
     const entry = entries.find((e) => e.id === id)
@@ -77,11 +95,26 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
     }
   }, [entries])
 
+  const unlistCard = useCallback(async (entryId: string, listingId: string) => {
+    const saved = entries.find((e) => e.id === entryId)?.listing
+    setEntries((prev) => prev.map((e) => e.id === entryId ? { ...e, listing: undefined } : e))
+    setPending((p) => ({ ...p, [entryId]: true }))
+
+    try {
+      const res = await fetch(`/api/listings/${listingId}`, { method: 'DELETE' })
+      if (!res.ok) setEntries((prev) => prev.map((e) => e.id === entryId ? { ...e, listing: saved } : e))
+    } catch {
+      setEntries((prev) => prev.map((e) => e.id === entryId ? { ...e, listing: saved } : e))
+    } finally {
+      setPending((p) => { const n = { ...p }; delete n[entryId]; return n })
+    }
+  }, [entries])
+
   if (entries.length === 0) {
     return (
-      <div className="py-16 text-center text-gray-400">
+      <div className="py-16 text-center text-sand-400">
         <p className="text-lg">Your collection is empty.</p>
-        <Link href="/search" className="mt-2 inline-block text-sm text-blue-600 hover:underline">
+        <Link href="/search" className="mt-2 inline-block text-sm text-accent-500 hover:underline">
           Search for cards to add →
         </Link>
       </div>
@@ -90,23 +123,46 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between rounded-lg bg-blue-50 px-5 py-3">
-        <span className="text-sm font-medium text-blue-700">
-          {entries.length} card{entries.length !== 1 ? 's' : ''}
+      <div className="flex items-center justify-between rounded-lg bg-accent-50 px-5 py-3">
+        <span className="text-sm font-medium text-accent-700">
+          {entries.length} unique card{entries.length !== 1 ? 's' : ''}
+          {totalCopies !== entries.length && (
+            <span className="ml-1 font-normal text-accent-500">· {totalCopies} copies</span>
+          )}
         </span>
-        <span className="text-xl font-bold text-blue-900">
-          Total: ${total.toFixed(2)}
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="flex rounded-md border border-accent-200 bg-white text-xs font-semibold overflow-hidden">
+            {(['USD', 'EUR'] as Currency[]).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCurrency(c)}
+                className={`px-3 py-1.5 transition-colors ${
+                  currency === c
+                    ? 'bg-accent-500 text-white'
+                    : 'text-accent-700 hover:bg-accent-50'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <span className="text-xl font-bold text-accent-900">
+            Total: {cfg.symbol}{total.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {sorted.map((entry) => {
-          const price = entry.foil ? entry.price?.usdFoil : entry.price?.usd
+          const priceStr = entry.foil ? entry.price?.[cfg.foil] : entry.price?.[cfg.regular]
+          const lineTotal = priceStr
+            ? `${cfg.symbol}${(parseFloat(priceStr as string) * entry.quantity).toFixed(2)}`
+            : '—'
           const busy = pending[entry.id] ?? false
 
           return (
             <li key={entry.id} className={`group relative ${busy ? 'opacity-60' : ''}`}>
-              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+              <div className="overflow-hidden rounded-lg border border-sand-200 bg-white shadow-sm">
                 <Link href={`/cards/${entry.scryfallId}`} className="block">
                   <div className="relative aspect-[5/7] w-full bg-gray-100">
                     {entry.card.imageUri ? (
@@ -118,7 +174,7 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
                         className="object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                      <div className="flex h-full items-center justify-center text-xs text-sand-400">
                         No image
                       </div>
                     )}
@@ -130,19 +186,35 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
                   </div>
 
                   <div className="px-2 pt-2">
-                    <p className="truncate text-xs font-medium text-gray-900 group-hover:text-blue-600">
+                    <p className="truncate text-xs font-medium text-sand-900 group-hover:text-accent-500">
                       {entry.card.name}
                     </p>
-                    <p className="text-xs text-gray-500">{entry.card.setCode.toUpperCase()}</p>
+                    <p className="text-xs text-sand-500">{entry.card.setCode.toUpperCase()}</p>
                   </div>
                 </Link>
+
+                {entry.listing && (
+                  <div className="mx-2 mb-1 flex items-center justify-between rounded bg-accent-50 px-2 py-1">
+                    <span className="text-xs font-semibold text-accent-700">
+                      {entry.listing.currency === 'EUR' ? '€' : '$'}{parseFloat(entry.listing.price).toFixed(2)} for sale
+                    </span>
+                    <button
+                      onClick={() => unlistCard(entry.id, entry.listing!.id)}
+                      disabled={busy}
+                      className="ml-1 text-accent-400 hover:text-red-500 disabled:opacity-40 transition-colors"
+                      aria-label="Remove listing"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between px-2 pb-2 pt-1">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateQuantity(entry.id, -1)}
                       disabled={busy || entry.quantity <= 1}
-                      className="flex h-5 w-5 items-center justify-center rounded border border-gray-300 text-xs hover:bg-gray-50 disabled:opacity-40"
+                      className="flex h-5 w-5 items-center justify-center rounded border border-sand-300 text-xs hover:bg-sand-50 disabled:opacity-40"
                       aria-label="Decrease quantity"
                     >
                       −
@@ -151,7 +223,7 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
                     <button
                       onClick={() => updateQuantity(entry.id, 1)}
                       disabled={busy}
-                      className="flex h-5 w-5 items-center justify-center rounded border border-gray-300 text-xs hover:bg-gray-50 disabled:opacity-40"
+                      className="flex h-5 w-5 items-center justify-center rounded border border-sand-300 text-xs hover:bg-sand-50 disabled:opacity-40"
                       aria-label="Increase quantity"
                     >
                       +
@@ -159,13 +231,11 @@ export function CollectionGrid({ initialEntries }: { initialEntries: CollectionE
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-green-700">
-                      {price ? `$${(parseFloat(price) * entry.quantity).toFixed(2)}` : '—'}
-                    </span>
+                    <span className="text-xs font-semibold text-green-700">{lineTotal}</span>
                     <button
                       onClick={() => removeEntry(entry.id)}
                       disabled={busy}
-                      className="text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors"
+                      className="text-sand-300 hover:text-red-500 disabled:opacity-40 transition-colors"
                       aria-label={`Remove ${entry.card.name}`}
                     >
                       ✕

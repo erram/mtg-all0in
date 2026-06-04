@@ -21,7 +21,7 @@
       {
         "key": "wip_tasks",
         "label": "WIP task count",
-        "actual": 1,
+        "actual": 0,
         "threshold": 4,
         "triggered": false
       },
@@ -49,56 +49,51 @@
       {
         "key": "session_age_minutes",
         "label": "session age (minutes)",
-        "actual": 44,
+        "actual": 77,
         "threshold": 120,
         "triggered": false
       }
     ],
     "counters": {
-      "wipTasks": 1,
+      "wipTasks": 0,
       "blockedTasks": 0,
       "recentEdits": 20,
       "failedChecks": 0,
-      "sessionAgeMinutes": 44
+      "sessionAgeMinutes": 77
     }
   },
   "continuity": {
     "plugin_first_workflow": true,
     "resume_aware_effort_continuity": true,
     "effort_hint": "medium",
-    "summary": "plugin-first workflow: enabled; resume-aware effort continuity: medium; next_task=4.1"
+    "summary": "plugin-first workflow: enabled; resume-aware effort continuity: medium"
   },
   "legacy_version": "1.0.0",
   "metrics": null,
   "recentEdits": [
+    ".claude/memory/session-log.md",
     ".claude/sessions/.last_inbox_check",
+    ".claude/sessions/broadcast.md",
     ".claude/state/changed-files.jsonl",
     ".claude/state/cursor-notification.md",
+    ".claude/state/handoff-artifact.json",
     ".claude/state/plans-state.json",
     ".claude/state/pm-notification.md",
+    ".claude/state/precompact-snapshot.json",
     ".claude/state/progress-last-regen.txt",
     ".claude/state/session-events.jsonl",
-    ".claude/state/session-skills-used.json",
+    ".claude/state/session.events.jsonl",
     ".claude/state/session.json",
     ".claude/state/test-recommendation.json",
-    ".claude/state/usage-stats.jsonl",
-    "Plans.md",
-    "app/layout.tsx",
-    "app/page.tsx",
-    "next.config.mjs",
-    ".claude/state/contracts/4.1.sprint-contract.json",
-    ".claude/state/contracts/4.2.sprint-contract.json",
-    ".claude/state/contracts/4.3.sprint-contract.json",
-    ".claude/state/contracts/4.4.sprint-contract.json",
-    ".claude/state/handoff-artifact.json"
+    "app/(auth)/login/page.tsx",
+    "app/api/collection/route.ts",
+    "app/cards/[id]/error.tsx",
+    "app/cards/[id]/loading.tsx",
+    "app/cards/[id]/page.tsx",
+    "app/collection/error.tsx"
   ],
   "sessionId": "",
-  "timestamp": "2026-05-26T12:15:32Z",
+  "timestamp": "2026-06-04T12:34:19Z",
   "version": "1.0.0",
-  "wipTasks": [
-    "Mobile-responsive layout audit — search, detail, collection pages",
-    "Error boundaries + loading skeletons on all pages",
-    "Vercel deployment + env vars setup (DATABASE_URL, NEXTAUTH_SECRET)",
-    "README with setup instructions + architecture diagram"
-  ]
+  "wipTasks": null
 }

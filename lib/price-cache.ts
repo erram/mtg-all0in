@@ -4,6 +4,12 @@ import type { Card, CardPrice } from '@/app/generated/prisma/client'
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
+export type PricePoint = {
+  date: Date
+  usd: number | null
+  eur: number | null
+}
+
 export type CardDisplayData = {
   scryfallId: string
   name: string
@@ -14,12 +20,20 @@ export type CardDisplayData = {
     usd: string | null
     usdFoil: string | null
     eur: string | null
+    eurFoil: string | null
     fetchedAt: Date
   }
+  priceHistory: PricePoint[]
   fromCache: boolean
 }
 
-function toDisplayData(card: Card, price: CardPrice, fromCache: boolean): CardDisplayData {
+function toNum(d: { toString(): string } | null | undefined): number | null {
+  return d ? parseFloat(d.toString()) : null
+}
+
+function toDisplayData(card: Card, allPrices: CardPrice[], fromCache: boolean): CardDisplayData {
+  const latest = allPrices[0]
+  const chronological = [...allPrices].reverse()
   return {
     scryfallId: card.scryfallId,
     name: card.name,
@@ -27,11 +41,17 @@ function toDisplayData(card: Card, price: CardPrice, fromCache: boolean): CardDi
     imageUri: card.imageUri,
     oracleText: card.oracleText,
     prices: {
-      usd: price.usd?.toString() ?? null,
-      usdFoil: price.usdFoil?.toString() ?? null,
-      eur: price.eur?.toString() ?? null,
-      fetchedAt: price.fetchedAt,
+      usd: latest.usd?.toString() ?? null,
+      usdFoil: latest.usdFoil?.toString() ?? null,
+      eur: latest.eur?.toString() ?? null,
+      eurFoil: latest.eurFoil?.toString() ?? null,
+      fetchedAt: latest.fetchedAt,
     },
+    priceHistory: chronological.map((p) => ({
+      date: p.fetchedAt,
+      usd: toNum(p.usd),
+      eur: toNum(p.eur),
+    })),
     fromCache,
   }
 }
@@ -39,19 +59,15 @@ function toDisplayData(card: Card, price: CardPrice, fromCache: boolean): CardDi
 export async function getCachedCard(scryfallId: string): Promise<CardDisplayData | null> {
   const dbCard = await prisma.card.findUnique({
     where: { scryfallId },
-    include: { prices: { orderBy: { fetchedAt: 'desc' }, take: 1 } },
+    include: { prices: { orderBy: { fetchedAt: 'desc' }, take: 30 } },
   })
 
-  const latestPrice = dbCard?.prices[0]
-  if (!dbCard || !latestPrice) return null
+  if (!dbCard || dbCard.prices.length === 0) return null
 
-  const isStale = Date.now() - latestPrice.fetchedAt.getTime() > CACHE_TTL_MS
+  const isStale = Date.now() - dbCard.prices[0].fetchedAt.getTime() > CACHE_TTL_MS
+  if (isStale) void fetchAndStore(scryfallId)
 
-  if (isStale) {
-    void fetchAndStore(scryfallId)
-  }
-
-  return toDisplayData(dbCard, latestPrice, true)
+  return toDisplayData(dbCard, dbCard.prices, true)
 }
 
 export async function fetchAndStore(scryfallId: string): Promise<CardDisplayData> {
@@ -74,16 +90,23 @@ export async function fetchAndStore(scryfallId: string): Promise<CardDisplayData
     },
   })
 
-  const price = await prisma.cardPrice.create({
+  await prisma.cardPrice.create({
     data: {
       scryfallId,
       usd: c.prices.usd ?? null,
       usdFoil: c.prices.usd_foil ?? null,
       eur: c.prices.eur ?? null,
+      eurFoil: c.prices.eur_foil ?? null,
     },
   })
 
-  return toDisplayData(card, price, false)
+  const prices = await prisma.cardPrice.findMany({
+    where: { scryfallId },
+    orderBy: { fetchedAt: 'desc' },
+    take: 30,
+  })
+
+  return toDisplayData(card, prices, false)
 }
 
 export async function getCardWithPrices(scryfallId: string): Promise<CardDisplayData> {

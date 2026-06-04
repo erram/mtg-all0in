@@ -37,29 +37,29 @@ export function AddToCollectionForm({ scryfallId }: { scryfallId: string }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-gray-200 bg-white p-4 space-y-3"
+      className="rounded-lg border border-sand-200 bg-white p-4 space-y-3"
     >
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-sand-500">
         Add to Collection
       </h2>
 
       <div className="flex items-center gap-3">
-        <label className="text-sm text-gray-700">Qty</label>
+        <label className="text-sm text-sand-700">Qty</label>
         <input
           type="number"
           min={1}
           max={999}
           value={quantity}
           onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-          className="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center focus:border-blue-500 focus:outline-none"
+          className="w-16 rounded-md border border-sand-300 bg-white px-2 py-1 text-center text-sm text-sand-900 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20"
         />
 
-        <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+        <label className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-sand-700">
           <input
             type="checkbox"
             checked={foil}
             onChange={(e) => setFoil(e.target.checked)}
-            className="rounded border-gray-300 text-blue-600"
+            className="rounded border-sand-300 text-accent-500 focus:ring-accent-500/20"
           />
           Foil
         </label>
@@ -68,7 +68,7 @@ export function AddToCollectionForm({ scryfallId }: { scryfallId: string }) {
       <button
         type="submit"
         disabled={status === 'loading' || status === 'success'}
-        className="w-full rounded-md bg-blue-600 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
+        className="w-full rounded-md bg-accent-500 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-60 transition-colors"
       >
         {status === 'loading' && 'Adding…'}
         {status === 'success' && '✓ Added!'}

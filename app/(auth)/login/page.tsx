@@ -1,6 +1,7 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 
@@ -33,13 +34,14 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Sign in</h1>
+    <main className="flex min-h-screen items-center justify-center bg-sand-50">
+      <div className="w-full max-w-sm rounded-xl border border-sand-200 bg-white p-8 shadow-sm">
+        <h1 className="mb-2 text-2xl font-bold text-sand-900">Sign in</h1>
+        <p className="mb-6 text-sm text-sand-500">Welcome back to MTG Vault</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-sand-700">
               Email
             </label>
             <input
@@ -47,12 +49,12 @@ export default function LoginPage() {
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 w-full rounded-md border border-sand-300 bg-white px-3 py-2 text-sm text-sand-900 placeholder:text-sand-400 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-sand-700">
               Password
             </label>
             <input
@@ -60,7 +62,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 w-full rounded-md border border-sand-300 bg-white px-3 py-2 text-sm text-sand-900 placeholder:text-sand-400 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
 
@@ -69,11 +71,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+            className="w-full rounded-md bg-accent-500 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-60 transition-colors"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-sand-600">
+          Don&apos;t have an account?{' '}
+          <Link href="/register" className="font-medium text-accent-500 hover:underline">
+            Create one
+          </Link>
+        </p>
       </div>
     </main>
   )

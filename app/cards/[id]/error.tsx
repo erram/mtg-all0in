@@ -16,7 +16,7 @@ export default function CardDetailError({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
-      <nav className="mb-6 text-sm text-gray-500">
+      <nav className="mb-6 text-sm text-sand-500">
         <Link href="/search" className="hover:text-blue-600">
           ← Back to search
         </Link>
@@ -26,7 +26,7 @@ export default function CardDetailError({
         <p className="mt-1 text-sm text-red-600">Could not retrieve card data. Please try again.</p>
         <button
           onClick={reset}
-          className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          className="mt-4 rounded-md bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600"
         >
           Retry
         </button>

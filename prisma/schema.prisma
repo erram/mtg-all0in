@@ -13,6 +13,7 @@ model User {
   passwordHash String
   createdAt    DateTime          @default(now())
   collection   CollectionEntry[]
+  listings     Listing[]
 }
 
 model Card {
@@ -24,6 +25,7 @@ model Card {
   updatedAt  DateTime      @updatedAt
   prices     CardPrice[]
   collection CollectionEntry[]
+  listings   Listing[]
 }
 
 model CardPrice {
@@ -32,6 +34,7 @@ model CardPrice {
   usd        Decimal? @db.Decimal(10, 2)
   usdFoil    Decimal? @db.Decimal(10, 2)
   eur        Decimal? @db.Decimal(10, 2)
+  eurFoil    Decimal? @db.Decimal(10, 2)
   fetchedAt  DateTime @default(now())
   card       Card     @relation(fields: [scryfallId], references: [scryfallId])
 }
@@ -46,4 +49,58 @@ model CollectionEntry {
   addedAt    DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   card       Card     @relation(fields: [scryfallId], references: [scryfallId])
+}
+
+model Listing {
+  id         String   @id @default(cuid())
+  userId     String
+  scryfallId String
+  price      Decimal  @db.Decimal(10, 2)
+  currency   String   @default("USD")
+  condition  String   @default("NM")
+  foil       Boolean  @default(false)
+  quantity   Int      @default(1)
+  notes      String?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card       Card     @relation(fields: [scryfallId], references: [scryfallId])
+}
+
+model TournamentEvent {
+  id          String           @id @default(cuid())
+  source      String
+  externalId  String
+  format      String
+  name        String
+  date        DateTime
+  location    String?
+  playerCount Int?
+  decks       TournamentDeck[]
+  fetchedAt   DateTime         @default(now())
+
+  @@unique([source, externalId])
+}
+
+model TournamentDeck {
+  id          String          @id @default(cuid())
+  eventId     String
+  rank        Int?
+  playerName  String?
+  archetype   String?
+  colors      String?
+  decklist    Json?
+  externalUrl String?
+  event       TournamentEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model MetaSnapshot {
+  id         String   @id @default(cuid())
+  source     String
+  format     String
+  archetypes Json
+  fetchedAt  DateTime @default(now())
+
+  @@unique([source, format])
 }

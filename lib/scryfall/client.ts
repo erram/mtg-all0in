@@ -48,6 +48,36 @@ export async function getCardById(id: string): Promise<ScryfallCard> {
   return scryfallFetch<ScryfallCard>(`/cards/${id}`)
 }
 
+export async function getCardByName(name: string): Promise<ScryfallCard> {
+  const params = new URLSearchParams({ fuzzy: name })
+  return scryfallFetch<ScryfallCard>(`/cards/named?${params}`)
+}
+
+export async function getCardsByNames(names: string[]): Promise<Map<string, ScryfallCard>> {
+  const CHUNK = 75
+  const result = new Map<string, ScryfallCard>()
+  for (let i = 0; i < names.length; i += CHUNK) {
+    await rateLimit()
+    const chunk = names.slice(i, i + CHUNK)
+    const res = await fetch(`${BASE_URL}/cards/collection`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ identifiers: chunk.map((n) => ({ name: n })) }),
+      next: { revalidate: 0 },
+    })
+    if (!res.ok) continue
+    const json = (await res.json()) as { data: ScryfallCard[]; not_found: unknown[] }
+    for (const card of json.data) {
+      result.set(card.name.toLowerCase(), card)
+      // DFC names are "Front // Back" — also index by front face alone
+      if (card.name.includes(' // ')) {
+        result.set(card.name.split(' // ')[0].toLowerCase(), card)
+      }
+    }
+  }
+  return result
+}
+
 export function getCardImageUri(card: ScryfallCard): string {
   if (card.image_uris?.normal) return card.image_uris.normal
   if (card.card_faces?.[0]?.image_uris?.normal) return card.card_faces[0].image_uris.normal

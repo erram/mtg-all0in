@@ -15,12 +15,12 @@ export default function SearchError({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">Card Search</h1>
+      <h1 className="mb-6 text-2xl font-bold text-sand-900">Card Search</h1>
       <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
         <p className="text-red-700">Failed to load search results. Please try again.</p>
         <button
           onClick={reset}
-          className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          className="mt-4 rounded-md bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600"
         >
           Retry
         </button>

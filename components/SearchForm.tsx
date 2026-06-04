@@ -19,11 +19,11 @@ export function SearchForm({ defaultValue = '' }: { defaultValue?: string }) {
         type="search"
         defaultValue={defaultValue}
         placeholder="Search cards… e.g. lightning bolt"
-        className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="flex-1 rounded-md border border-sand-300 bg-white px-4 py-2 text-sm text-sand-900 placeholder:text-sand-400 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20"
       />
       <button
         type="submit"
-        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        className="rounded-md bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600 transition-colors"
       >
         Search
       </button>
