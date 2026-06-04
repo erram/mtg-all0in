@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FORMATS, FORMAT_LABELS } from '@/lib/tournaments/types'
 import type { Format } from '@/lib/tournaments/types'
 import type { MatchupAnalysis } from '@/lib/analyzer/matchup'
@@ -23,6 +23,59 @@ function WinRateBar({ rate }: { rate: number }) {
   )
 }
 
+function ArchetypeInput({
+  value,
+  onChange,
+  placeholder,
+  suggestions,
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  suggestions: string[]
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const filtered = value.length >= 2
+    ? suggestions.filter((s) => s.toLowerCase().includes(value.toLowerCase())).slice(0, 6)
+    : []
+
+  useEffect(() => {
+    function onClickOut(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOut)
+    return () => document.removeEventListener('mousedown', onClickOut)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder={placeholder}
+        className="w-full rounded-lg border border-sand-300 px-3 py-2 text-sm text-sand-800 focus:border-accent-400 focus:outline-none focus:ring-1 focus:ring-accent-400"
+      />
+      {open && filtered.length > 0 && (
+        <ul className="absolute z-20 mt-1 w-full rounded-lg border border-sand-200 bg-white shadow-lg overflow-hidden">
+          {filtered.map((s) => (
+            <li key={s}>
+              <button
+                className="w-full px-3 py-2 text-left text-sm text-sand-800 hover:bg-accent-50 hover:text-accent-700"
+                onMouseDown={(e) => { e.preventDefault(); onChange(s); setOpen(false) }}
+              >
+                {s}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export function MatchupCalculatorForm() {
   const [format, setFormat] = useState<Format>('duel-commander')
   const [yourDeck, setYourDeck] = useState('')
@@ -30,6 +83,15 @@ export function MatchupCalculatorForm() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<MatchupAnalysis | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [archetypes, setArchetypes] = useState<string[]>([])
+
+  useEffect(() => {
+    setResult(null)
+    fetch(`/api/analyzer/archetypes?format=${format}`)
+      .then((r) => r.json())
+      .then((d) => setArchetypes(d.archetypes ?? []))
+      .catch(() => {})
+  }, [format])
 
   function addOpponent() { setOpponents((o) => [...o, '']) }
   function removeOpponent(i: number) { setOpponents((o) => o.filter((_, idx) => idx !== i)) }
@@ -86,25 +148,32 @@ export function MatchupCalculatorForm() {
         {/* Your deck */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-sand-700">Your deck / commander</label>
-          <input
+          <ArchetypeInput
             value={yourDeck}
-            onChange={(e) => setYourDeck(e.target.value)}
+            onChange={setYourDeck}
             placeholder="e.g. Lumra, Bellow Of The Woods"
-            className="w-full rounded-lg border border-sand-300 px-3 py-2 text-sm text-sand-800 focus:border-accent-400 focus:outline-none focus:ring-1 focus:ring-accent-400"
+            suggestions={archetypes}
           />
         </div>
 
         {/* Opponents */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-sand-700">Opponent decks</label>
+          <label className="mb-1.5 block text-sm font-medium text-sand-700">
+            Opponent decks
+            {archetypes.length > 0 && (
+              <span className="ml-2 font-normal text-sand-400">
+                — {archetypes.length} known archetypes in DB
+              </span>
+            )}
+          </label>
           <div className="space-y-2">
             {opponents.map((opp, i) => (
               <div key={i} className="flex gap-2">
-                <input
+                <ArchetypeInput
                   value={opp}
-                  onChange={(e) => setOpponent(i, e.target.value)}
-                  placeholder={`Opponent ${i + 1} deck / commander`}
-                  className="flex-1 rounded-lg border border-sand-300 px-3 py-2 text-sm text-sand-800 focus:border-accent-400 focus:outline-none focus:ring-1 focus:ring-accent-400"
+                  onChange={(v) => setOpponent(i, v)}
+                  placeholder={`Opponent ${i + 1}`}
+                  suggestions={archetypes}
                 />
                 {opponents.length > 1 && (
                   <button
@@ -117,10 +186,7 @@ export function MatchupCalculatorForm() {
               </div>
             ))}
           </div>
-          <button
-            onClick={addOpponent}
-            className="mt-2 text-sm text-accent-600 hover:text-accent-700"
-          >
+          <button onClick={addOpponent} className="mt-2 text-sm text-accent-600 hover:text-accent-700">
             + Add opponent
           </button>
         </div>
@@ -142,36 +208,38 @@ export function MatchupCalculatorForm() {
 
         <div className="rounded-lg border border-sand-200 bg-sand-50 p-3 text-xs text-sand-500 space-y-1">
           <p className="font-medium text-sand-700">How it works</p>
-          <p>Win rates are estimated using the Bradley-Terry model applied to historical tournament placements from MTGTop8. More tournament appearances = higher confidence.</p>
-          <p>Unknown decks default to the median performance score for the format.</p>
+          <p>
+            Each archetype gets a score = Σ(1/rank) across all tournament appearances.
+            A deck winning 3 events outscores one with a single lucky top-8 by a large margin.
+            Head-to-head win rates are then derived using the Bradley-Terry model.
+          </p>
+          <p>Archetypes not in the DB fall back to the format median.</p>
         </div>
       </div>
 
       {/* Results panel */}
       {result && (
         <div className="space-y-4">
-          {/* Overall score */}
           <div className={`rounded-xl p-6 text-center ${
             overallPct! >= 55 ? 'bg-green-50 border border-green-200' :
             overallPct! >= 45 ? 'bg-yellow-50 border border-yellow-200' :
             'bg-red-50 border border-red-200'
           }`}>
-            <p className="text-sm text-sand-600 mb-1">Overall win rate</p>
+            <p className="text-sm text-sand-600 mb-1">Overall expected win rate</p>
             <p className={`text-5xl font-bold ${
               overallPct! >= 55 ? 'text-green-700' : overallPct! >= 45 ? 'text-yellow-700' : 'text-red-700'
             }`}>{overallPct}%</p>
             <p className="text-xs text-sand-500 mt-1">{result.yourDeck}</p>
-            {result.yourScore && (
+            {result.yourScore ? (
               <p className="text-xs text-sand-400 mt-0.5">
                 {result.yourScore.appearances} tournament appearance{result.yourScore.appearances !== 1 ? 's' : ''} on record
+                · score {result.yourScore.performanceScore.toFixed(2)}
               </p>
-            )}
-            {!result.yourScore && (
+            ) : (
               <p className="text-xs text-sand-400 mt-0.5">No tournament data — using format median</p>
             )}
           </div>
 
-          {/* Per-matchup breakdown */}
           <div className="rounded-lg border border-sand-200 bg-white overflow-hidden">
             <div className="border-b border-sand-100 px-4 py-3">
               <h3 className="text-sm font-semibold text-sand-700">Matchup breakdown</h3>
@@ -186,6 +254,9 @@ export function MatchupCalculatorForm() {
                     </span>
                   </div>
                   <WinRateBar rate={m.winRate} />
+                  <p className="mt-0.5 text-[10px] text-sand-400">
+                    {m.opponentAppearances} appearance{m.opponentAppearances !== 1 ? 's' : ''} on record
+                  </p>
                 </div>
               ))}
             </div>

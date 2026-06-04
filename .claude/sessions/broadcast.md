@@ -85,3 +85,12 @@
 
 ## 2026-06-04T11:49:44Z [01af7baa-1db]
 📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/tournaments/meta/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-04T14:03:38Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-04T14:03:45Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/matchup/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-04T14:12:58Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/archetypes/route.ts` が変更されました: パターン 'api/' にマッチ

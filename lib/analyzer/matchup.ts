@@ -32,37 +32,58 @@ export async function getArchetypeScores(format: Format): Promise<Map<string, Ar
     where: {
       archetype: { not: null },
       rank: { not: null },
-      event: { format, playerCount: { not: null } },
+      event: { format },
     },
     include: { event: { select: { playerCount: true } } },
   })
 
-  // Group by archetype
-  const groups = new Map<string, { rankRatios: number[]; appearances: number }>()
+  // Score = sum(1/rank) across all appearances.
+  // This rewards consistency: multiple top finishes >> one lucky top-8.
+  // 1st place contributes 1.0, 4th contributes 0.25, 8th contributes 0.125.
+  const groups = new Map<string, { scoreSum: number; appearances: number; displayName: string }>()
 
   for (const row of rows) {
     const key = row.archetype!.toLowerCase()
-    const playerCount = row.event.playerCount!
-    // rank 1 in a 56-player event → ratio 0.018 (lower = better finish)
-    const rankRatio = row.rank! / playerCount
-    const g = groups.get(key) ?? { rankRatios: [], appearances: 0 }
-    g.rankRatios.push(rankRatio)
+    const g = groups.get(key) ?? { scoreSum: 0, appearances: 0, displayName: row.archetype! }
+    g.scoreSum += 1 / row.rank!
     g.appearances++
     groups.set(key, g)
   }
 
   const scores = new Map<string, ArchetypeScore>()
   for (const [key, g] of Array.from(groups.entries())) {
-    const avgRatio = g.rankRatios.reduce((s: number, r: number) => s + r, 0) / g.rankRatios.length
     scores.set(key, {
-      archetype: key,
+      archetype: g.displayName,
       appearances: g.appearances,
-      // Invert: lower rank ratio = better performance = higher score
-      performanceScore: Math.max(0, 1 - avgRatio),
+      performanceScore: g.scoreSum,
     })
   }
 
   return scores
+}
+
+export async function getKnownArchetypes(format: Format): Promise<string[]> {
+  const rows = await prisma.tournamentDeck.findMany({
+    where: { archetype: { not: null }, event: { format }, rank: { not: null } },
+    select: { archetype: true },
+    distinct: ['archetype'],
+    orderBy: { archetype: 'asc' },
+  })
+  return rows.map((r) => r.archetype!)
+}
+
+function findScore(
+  scores: Map<string, ArchetypeScore>,
+  name: string,
+): ArchetypeScore | null {
+  const key = name.toLowerCase()
+  // Exact match first
+  if (scores.has(key)) return scores.get(key)!
+  // Prefix match: "Lumra" matches "lumra, bellow of the woods"
+  for (const [k, v] of Array.from(scores.entries())) {
+    if (k.startsWith(key) || key.startsWith(k)) return v
+  }
+  return null
 }
 
 export async function calculateMatchups(
@@ -72,19 +93,16 @@ export async function calculateMatchups(
 ): Promise<MatchupAnalysis> {
   const scores = await getArchetypeScores(format)
 
-  const yourKey = yourDeck.toLowerCase()
-  const yourScore = scores.get(yourKey) ?? null
+  const yourScore = findScore(scores, yourDeck)
 
-  // Default score for unknown archetypes: median of known scores
-  const allScores = Array.from(scores.values()).map((s) => s.performanceScore)
-  const medianScore = allScores.length > 0
-    ? allScores.sort((a, b) => a - b)[Math.floor(allScores.length / 2)]
-    : 0.5
+  // Median of known scores as fallback for unknown archetypes
+  const allScores = Array.from(scores.values()).map((s) => s.performanceScore).sort((a, b) => a - b)
+  const medianScore = allScores.length > 0 ? allScores[Math.floor(allScores.length / 2)] : 1
+
   const yourPerf = yourScore?.performanceScore ?? medianScore
 
   const matchups: MatchupResult[] = opponents.map((opp) => {
-    const oppKey = opp.toLowerCase()
-    const oppScore = scores.get(oppKey)
+    const oppScore = findScore(scores, opp)
     const oppPerf = oppScore?.performanceScore ?? medianScore
 
     const appearances = oppScore?.appearances ?? 0
@@ -92,7 +110,7 @@ export async function calculateMatchups(
       appearances >= 5 ? 'high' : appearances >= 2 ? 'medium' : 'low'
 
     return {
-      opponent: opp,
+      opponent: oppScore?.archetype ?? opp, // use canonical name from DB if found
       winRate: bradleyTerry(yourPerf, oppPerf),
       confidence,
       opponentAppearances: appearances,

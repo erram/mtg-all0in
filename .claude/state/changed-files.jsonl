@@ -90,3 +90,17 @@
 {"file":"app/tournaments/[id]/loading.tsx","action":"Write","timestamp":"2026-06-04T12:38:14Z","important":false}
 {"file":"components/VenueFilter.tsx","action":"Write","timestamp":"2026-06-04T12:46:26Z","important":false}
 {"file":"vercel.json","action":"Write","timestamp":"2026-06-04T13:09:29Z","important":false}
+{"file":"lib/scryfall/types.ts","action":"Edit","timestamp":"2026-06-04T14:02:03Z","important":false}
+{"file":"lib/analyzer/parser.ts","action":"Write","timestamp":"2026-06-04T14:02:16Z","important":false}
+{"file":"lib/analyzer/stats.ts","action":"Write","timestamp":"2026-06-04T14:03:09Z","important":false}
+{"file":"lib/analyzer/matchup.ts","action":"Write","timestamp":"2026-06-04T14:03:27Z","important":false}
+{"file":"app/api/analyzer/route.ts","action":"Write","timestamp":"2026-06-04T14:03:38Z","important":false}
+{"file":"app/api/analyzer/matchup/route.ts","action":"Write","timestamp":"2026-06-04T14:03:45Z","important":false}
+{"file":"components/ManaCurve.tsx","action":"Write","timestamp":"2026-06-04T14:03:59Z","important":false}
+{"file":"components/DeckAnalyzerForm.tsx","action":"Write","timestamp":"2026-06-04T14:04:40Z","important":false}
+{"file":"components/MatchupCalculatorForm.tsx","action":"Write","timestamp":"2026-06-04T14:05:14Z","important":false}
+{"file":"app/analyzer/page.tsx","action":"Write","timestamp":"2026-06-04T14:05:21Z","important":false}
+{"file":"app/analyzer/matchup/page.tsx","action":"Write","timestamp":"2026-06-04T14:05:30Z","important":false}
+{"file":"components/Nav.tsx","action":"Edit","timestamp":"2026-06-04T14:05:36Z","important":false}
+{"file":"lib/scryfall/__tests__/client.test.ts","action":"Edit","timestamp":"2026-06-04T14:05:55Z","important":true}
+{"file":"app/api/analyzer/archetypes/route.ts","action":"Write","timestamp":"2026-06-04T14:12:58Z","important":false}
