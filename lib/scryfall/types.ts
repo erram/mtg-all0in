@@ -23,10 +23,18 @@ export interface ScryfallCard {
   set_name: string
   collector_number: string
   oracle_text?: string
+  mana_cost?: string
+  cmc: number
+  type_line: string
+  colors?: string[]
+  color_identity: string[]
+  keywords: string[]
   image_uris?: ScryfallImageUris
   card_faces?: Array<{
     name: string
     oracle_text?: string
+    mana_cost?: string
+    type_line?: string
     image_uris?: ScryfallImageUris
   }>
   prices: ScryfallPrices

@@ -14,6 +14,7 @@ export function Nav() {
     { href: '/search', label: 'Search' },
     { href: '/collection', label: 'Collection' },
     { href: '/tournaments', label: 'Tournaments' },
+    { href: '/analyzer', label: 'Analyzer' },
     ...(session ? [{ href: '/profile', label: 'Profile' }] : []),
   ]
 

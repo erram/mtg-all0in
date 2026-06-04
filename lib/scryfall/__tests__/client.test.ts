@@ -10,6 +10,10 @@ const mockCard: ScryfallCard = {
   set_name: 'Limited Edition Alpha',
   collector_number: '161',
   oracle_text: 'Lightning Bolt deals 3 damage to any target.',
+  cmc: 1,
+  type_line: 'Instant',
+  color_identity: ['R'],
+  keywords: [],
   image_uris: {
     small: 'https://cards.scryfall.io/small/abc.jpg',
     normal: 'https://cards.scryfall.io/normal/abc.jpg',
