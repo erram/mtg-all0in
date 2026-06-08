@@ -2,6 +2,7 @@ import type { ScryfallCard, ScryfallList, ScryfallError } from './types'
 
 const BASE_URL = 'https://api.scryfall.com'
 const RATE_LIMIT_MS = 100
+const UA = 'MTGVault/1.0 (mtg-trading-platform; https://github.com/erram/mtg-all0in)'
 
 let lastCallAt = 0
 
@@ -17,7 +18,7 @@ async function rateLimit() {
 async function scryfallFetch<T>(path: string): Promise<T> {
   await rateLimit()
   const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/json', 'User-Agent': UA },
     next: { revalidate: 0 },
   })
   const json = (await res.json()) as T | ScryfallError
@@ -61,7 +62,7 @@ export async function getCardsByNames(names: string[]): Promise<Map<string, Scry
     const chunk = names.slice(i, i + CHUNK)
     const res = await fetch(`${BASE_URL}/cards/collection`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'User-Agent': UA },
       body: JSON.stringify({ identifiers: chunk.map((n) => ({ name: n })) }),
       next: { revalidate: 0 },
     })
