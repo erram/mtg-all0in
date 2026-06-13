@@ -1,14 +1,14 @@
 export default function EventLoading() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-5 h-4 w-32 animate-pulse rounded bg-sand-200" />
+      <div className="mb-5 h-4 w-32 skeleton rounded" />
 
       <div className="mb-8 space-y-2">
-        <div className="h-7 w-72 animate-pulse rounded bg-sand-200" />
+        <div className="h-7 w-72 skeleton rounded" />
         <div className="flex gap-3">
-          <div className="h-4 w-28 animate-pulse rounded bg-sand-200" />
-          <div className="h-4 w-20 animate-pulse rounded bg-sand-200" />
-          <div className="h-4 w-16 animate-pulse rounded bg-sand-200" />
+          <div className="h-4 w-28 skeleton rounded" />
+          <div className="h-4 w-20 skeleton rounded" />
+          <div className="h-4 w-16 skeleton rounded" />
         </div>
       </div>
 
@@ -16,7 +16,7 @@ export default function EventLoading() {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="h-28 animate-pulse rounded-lg bg-sand-200"
+            className="h-28 skeleton"
             style={{ animationDelay: `${i * 40}ms` }}
           />
         ))}

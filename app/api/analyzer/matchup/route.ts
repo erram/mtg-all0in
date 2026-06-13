@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { calculateMatchups } from '@/lib/analyzer/matchup'
 import { FORMATS } from '@/lib/tournaments/types'
 import type { Format } from '@/lib/tournaments/types'
 
 export async function POST(req: Request) {
   try {
+    // Optional: signed-in users get predictions blended with their logged results
+    const session = await getServerSession(authOptions)
     const { yourDeck, opponents, format } = (await req.json()) as {
       yourDeck: string
       opponents: string[]
@@ -15,7 +19,12 @@ export async function POST(req: Request) {
     if (!opponents?.length) return NextResponse.json({ error: 'Add at least one opponent' }, { status: 400 })
     if (!FORMATS.includes(format)) return NextResponse.json({ error: 'Invalid format' }, { status: 400 })
 
-    const result = await calculateMatchups(yourDeck.trim(), opponents.map((o) => o.trim()).filter(Boolean), format)
+    const result = await calculateMatchups(
+      yourDeck.trim(),
+      opponents.map((o) => o.trim()).filter(Boolean),
+      format,
+      session?.user?.id,
+    )
     return NextResponse.json(result)
   } catch (e) {
     console.error('[matchup]', e)

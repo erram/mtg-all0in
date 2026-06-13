@@ -94,3 +94,54 @@
 
 ## 2026-06-04T14:12:58Z [01af7baa-1db]
 📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/archetypes/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T07:59:55Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T08:00:03Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T08:00:13Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T08:00:28Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T08:00:37Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T10:26:06Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T10:26:18Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/prisma/schema.prisma` が変更されました: パターン 'schema.prisma' にマッチ
+
+## 2026-06-12T11:16:31Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/builder/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:16:35Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/builder/[deckId]/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:16:50Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/matches/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:16:53Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/matches/[id]/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:00Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/wants/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:03Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/wants/[id]/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:17Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/wants/matches/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:21Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/matchup/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:31Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/analyzer/matchup/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-12T11:17:55Z [01af7baa-1db]
+📁 `/Users/molnarricsi/Documents/ASH/mtg-trading-platform/app/api/wants/matches/route.ts` が変更されました: パターン 'api/' にマッチ

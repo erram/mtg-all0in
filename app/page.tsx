@@ -2,6 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
+// ISR: serve instantly from static cache, refresh listings at most every 60s
+export const revalidate = 60
+
 const CONDITIONS: Record<string, string> = {
   NM: 'Near Mint',
   LP: 'Light Play',
@@ -30,73 +33,107 @@ function timeAgo(date: Date) {
   return `${Math.floor(s / 86400)}d ago`
 }
 
+const FEATURES = [
+  {
+    title: 'Real-time prices',
+    body: 'USD and EUR prices refreshed daily from Scryfall, sourced from TCGPlayer and Cardmarket.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+        <path d="M3 17l5-5 4 4 8-8" />
+        <path d="M14 8h6v6" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Personal collection',
+    body: 'Add cards with quantity and foil tracking. See total value at a glance.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+        <rect x="3" y="6" width="13" height="16" rx="2" transform="rotate(-8 3 6)" />
+        <rect x="8" y="4" width="13" height="16" rx="2" transform="rotate(4 8 4)" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Tournament insights',
+    body: 'Recent events, metagame breakdowns, deck analysis, and matchup win-rate predictions.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4z" />
+        <path d="M7 6H4a1 1 0 00-1 1c0 2 1.5 3.5 4 3.5M17 6h3a1 1 0 011 1c0 2-1.5 3.5-4 3.5" />
+      </svg>
+    ),
+  },
+]
+
 export default async function HomePage() {
   const listings = await getLatestListings()
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-16">
       {/* Hero */}
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-sand-900 sm:text-5xl">
-          Your MTG collection,{' '}
-          <span className="text-accent-500">always up to date</span>
+      <div className="animate-fade-up text-center">
+        <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent-200 bg-accent-50 px-3.5 py-1 text-xs font-medium text-accent-700">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-400 opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-500" />
+          </span>
+          Prices &amp; tournament data refreshed daily
+        </span>
+
+        <h1 className="text-balance text-4xl font-bold tracking-tight text-sand-900 sm:text-6xl">
+          Your MTG collection,
+          <br />
+          <span className="text-gradient">always up to date</span>
         </h1>
-        <p className="mt-4 text-lg text-sand-600">
-          Search thousands of Magic: The Gathering cards, view real-time pricing from Scryfall,
-          and track every card in your collection.
+        <p className="mx-auto mt-5 max-w-2xl text-balance text-lg text-sand-600">
+          Search thousands of Magic: The Gathering cards, view real-time pricing,
+          track your collection, and study the competitive metagame.
         </p>
-        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <Link
-            href="/search"
-            className="w-full rounded-lg bg-accent-500 px-6 py-3 text-base font-semibold text-white hover:bg-accent-600 transition-colors sm:w-auto"
-          >
+        <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <Link href="/search" className="btn-primary w-full px-7 py-3 text-base sm:w-auto">
             Search cards
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </Link>
-          <Link
-            href="/collection"
-            className="w-full rounded-lg border border-sand-300 bg-white px-6 py-3 text-base font-semibold text-sand-700 hover:bg-sand-100 transition-colors sm:w-auto"
-          >
+          <Link href="/collection" className="btn-secondary w-full px-7 py-3 text-base sm:w-auto">
             My collection
           </Link>
         </div>
       </div>
 
       {/* Feature grid */}
-      <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
-        {[
-          {
-            title: 'Real-time prices',
-            body: 'USD and EUR prices refreshed daily from Scryfall, sourced from TCGPlayer and Cardmarket.',
-          },
-          {
-            title: 'Personal collection',
-            body: 'Add cards with quantity and foil tracking. See total value at a glance.',
-          },
-          {
-            title: 'Marketplace',
-            body: 'List cards for sale and browse what other players are offering.',
-          },
-        ].map(({ title, body }) => (
-          <div key={title} className="rounded-xl border border-sand-200 bg-white p-5 shadow-sm">
+      <div className="stagger mt-20 grid grid-cols-1 gap-5 sm:grid-cols-3">
+        {FEATURES.map(({ title, body, icon }) => (
+          <div key={title} className="surface-hover group p-6">
+            <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-accent-50 text-accent-600 transition-all duration-300 ease-out-expo group-hover:scale-110 group-hover:bg-accent-500 group-hover:text-white">
+              {icon}
+            </span>
             <h2 className="font-semibold text-sand-900">{title}</h2>
-            <p className="mt-1 text-sm text-sand-600">{body}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-sand-600">{body}</p>
           </div>
         ))}
       </div>
 
       {/* Latest listings */}
-      <div className="mt-16">
-        <h2 className="mb-4 text-xl font-bold text-sand-900">Latest listings</h2>
+      <div className="mt-20">
+        <div className="mb-5 flex items-end justify-between">
+          <h2 className="text-xl font-bold text-sand-900">Latest listings</h2>
+          {listings.length > 0 && (
+            <span className="text-xs text-sand-400">{listings.length} active</span>
+          )}
+        </div>
 
         {listings.length === 0 ? (
-          <div className="rounded-xl border border-sand-200 bg-white px-6 py-12 text-center text-sand-400">
+          <div className="surface px-6 py-14 text-center text-sand-400">
             <p>No cards for sale yet.</p>
             <p className="mt-1 text-sm">
               View a card and click <span className="font-medium text-sand-600">List for Sale</span> to be the first.
             </p>
           </div>
         ) : (
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <ul className="stagger grid grid-cols-1 gap-3 sm:grid-cols-2">
             {listings.map((listing) => {
               const symbol = listing.currency === 'EUR' ? '€' : '$'
               const sellerHandle = listing.user.email.split('@')[0]
@@ -105,9 +142,9 @@ export default async function HomePage() {
                 <li key={listing.id}>
                   <Link
                     href={`/cards/${listing.scryfallId}`}
-                    className="flex gap-4 rounded-xl border border-sand-200 bg-white p-3 shadow-sm hover:border-accent-300 hover:shadow-md transition-all"
+                    className="surface-hover flex gap-4 p-3"
                   >
-                    <div className="relative h-20 w-14 shrink-0 overflow-hidden rounded-md bg-sand-100">
+                    <div className={`relative h-20 w-14 shrink-0 overflow-hidden rounded-md bg-sand-100 ${listing.foil ? 'foil-shine' : ''}`}>
                       {listing.card.imageUri && (
                         <Image
                           src={listing.card.imageUri}
@@ -119,13 +156,13 @@ export default async function HomePage() {
                       )}
                     </div>
 
-                    <div className="flex flex-1 flex-col justify-between min-w-0">
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
                       <div>
                         <p className="truncate font-semibold text-sand-900">{listing.card.name}</p>
                         <p className="text-xs text-sand-500">{listing.card.setCode.toUpperCase()}</p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="rounded bg-sand-100 px-1.5 py-0.5 text-sand-600">
+                        <span className="rounded-md bg-sand-100 px-1.5 py-0.5 text-sand-600">
                           {CONDITIONS[listing.condition] ?? listing.condition}
                         </span>
                         {listing.foil && (

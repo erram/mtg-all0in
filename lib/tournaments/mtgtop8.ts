@@ -9,6 +9,7 @@ const FORMAT_CODE: Record<Format, string> = {
   pioneer: 'PI',
   standard: 'ST',
   'duel-commander': 'EDH',
+  pauper: 'PAU',
 }
 
 async function fetchHtml(url: string): Promise<string> {

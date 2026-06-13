@@ -48,3 +48,43 @@
 - （必要に応じて追記）
 
 ---
+
+## セッション: 2026-06-05T09:59:18Z
+
+- session_id: `session-1780653544248403000`
+- project: `mtg-trading-platform`
+- branch: `main`
+- started_at: `2026-06-05T09:59:04Z`
+- ended_at: `2026-06-05T09:59:18Z`
+- changes: 0
+
+### 変更ファイル
+- （なし）
+
+### 重要な変更（important=true）
+- （なし）
+
+### 次回への引き継ぎ（任意）
+- （必要に応じて追記）
+
+---
+
+## セッション: 2026-06-12T07:32:35Z
+
+- session_id: `session-1781249541672952000`
+- project: `mtg-trading-platform`
+- branch: `main`
+- started_at: `2026-06-12T07:32:21Z`
+- ended_at: `2026-06-12T07:32:35Z`
+- changes: 0
+
+### 変更ファイル
+- （なし）
+
+### 重要な変更（important=true）
+- （なし）
+
+### 次回への引き継ぎ（任意）
+- （必要に応じて追記）
+
+---

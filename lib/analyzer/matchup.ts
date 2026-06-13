@@ -9,9 +9,11 @@ export interface ArchetypeScore {
 
 export interface MatchupResult {
   opponent: string
-  winRate: number           // 0–1
+  winRate: number           // 0–1, blended when personal data exists
+  modelWinRate: number      // 0–1, pure Bradley-Terry
   confidence: 'high' | 'medium' | 'low'
   opponentAppearances: number
+  personal: { wins: number; losses: number; draws: number } | null
 }
 
 export interface MatchupAnalysis {
@@ -86,12 +88,34 @@ function findScore(
   return null
 }
 
+// Pseudo-count weight for the model when blending with personal results.
+// With K=4: after 4 logged games, personal data carries half the weight.
+const MODEL_PSEUDO_COUNT = 4
+
 export async function calculateMatchups(
   yourDeck: string,
   opponents: string[],
   format: Format,
+  userId?: string,
 ): Promise<MatchupAnalysis> {
   const scores = await getArchetypeScores(format)
+
+  // Personal match history vs each opponent archetype (feature: model calibration)
+  const personalRecords = new Map<string, { wins: number; losses: number; draws: number }>()
+  if (userId) {
+    const logged = await prisma.matchResult.findMany({
+      where: { userId, format },
+      select: { oppArchetype: true, result: true },
+    })
+    for (const m of logged) {
+      const key = m.oppArchetype.toLowerCase()
+      const rec = personalRecords.get(key) ?? { wins: 0, losses: 0, draws: 0 }
+      if (m.result === 'WIN') rec.wins++
+      else if (m.result === 'LOSS') rec.losses++
+      else rec.draws++
+      personalRecords.set(key, rec)
+    }
+  }
 
   const yourScore = findScore(scores, yourDeck)
 
@@ -109,11 +133,27 @@ export async function calculateMatchups(
     const confidence: MatchupResult['confidence'] =
       appearances >= 5 ? 'high' : appearances >= 2 ? 'medium' : 'low'
 
+    const modelWinRate = bradleyTerry(yourPerf, oppPerf)
+
+    // Blend model with personal record: draws count half
+    const canonical = (oppScore?.archetype ?? opp).toLowerCase()
+    const personal = personalRecords.get(canonical) ?? personalRecords.get(opp.toLowerCase()) ?? null
+    let winRate = modelWinRate
+    if (personal) {
+      const games = personal.wins + personal.losses + personal.draws
+      if (games > 0) {
+        const personalRate = (personal.wins + personal.draws * 0.5) / games
+        winRate = (modelWinRate * MODEL_PSEUDO_COUNT + personalRate * games) / (MODEL_PSEUDO_COUNT + games)
+      }
+    }
+
     return {
       opponent: oppScore?.archetype ?? opp, // use canonical name from DB if found
-      winRate: bradleyTerry(yourPerf, oppPerf),
+      winRate,
+      modelWinRate,
       confidence,
       opponentAppearances: appearances,
+      personal,
     }
   })
 

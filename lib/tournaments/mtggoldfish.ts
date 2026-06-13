@@ -9,6 +9,7 @@ const FORMAT_SLUG: Partial<Record<Format, string>> = {
   pioneer: 'pioneer',
   standard: 'standard',
   'duel-commander': 'duel_commander',
+  pauper: 'pauper',
 }
 
 async function fetchHtml(url: string): Promise<string> {

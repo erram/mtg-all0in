@@ -4,21 +4,138 @@
 
 @layer base {
   body {
-    background-color: #FAF9F7;
-    color: #1C1612;
+    /* Warm parchment — deeper than the old near-white */
+    background-color: #efe8dc;
+    color: #1c1612;
+  }
+
+  /* Ambient warm lighting */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse 90% 55% at 50% -15%, rgba(217, 119, 86, 0.13), transparent),
+      radial-gradient(ellipse 50% 45% at -10% 60%, rgba(245, 193, 169, 0.16), transparent),
+      radial-gradient(ellipse 60% 45% at 105% 105%, rgba(163, 79, 48, 0.10), transparent),
+      radial-gradient(ellipse 45% 35% at 50% 45%, rgba(250, 249, 247, 0.55), transparent);
+    pointer-events: none;
+  }
+
+  /* Film grain — SVG turbulence noise, tiled */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.045;
+    mix-blend-mode: multiply;
+    pointer-events: none;
   }
 
   input,
   textarea,
   select {
-    background-color: #FFFFFF;
-    border-color: #E0D9CF;
-    color: #1C1612;
+    background-color: #ffffff;
+    border-color: #e0d9cf;
+    color: #1c1612;
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: #A39A90;
+    color: #a39a90;
+  }
+
+  ::selection {
+    background-color: #f5c1a9;
+    color: #5c2c18;
+  }
+
+  /* Accessible, on-theme focus rings */
+  :focus-visible {
+    outline: 2px solid #d97756;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Warm minimal scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #c9bfb3 transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: #c9bfb3;
+    border-radius: 8px;
+    border: 3px solid #efe8dc;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: #a39a90;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Standard raised surface */
+  .surface {
+    @apply rounded-xl border border-sand-200 bg-white shadow-card;
+  }
+
+  /* Interactive surface: lifts on hover */
+  .surface-hover {
+    @apply surface transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-sand-300 hover:shadow-card-hover;
+  }
+
+  /* Frosted glass (nav, overlays) — matches the parchment tone */
+  .glass {
+    background: rgba(243, 237, 228, 0.78);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent-500 px-5 py-2.5 text-sm font-semibold text-white shadow-card transition-all duration-300 ease-out-expo hover:-translate-y-px hover:bg-accent-600 hover:shadow-glow-accent active:translate-y-0 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  /* Secondary / ghost button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-sand-300 bg-white px-5 py-2.5 text-sm font-semibold text-sand-700 shadow-card transition-all duration-300 ease-out-expo hover:-translate-y-px hover:border-accent-300 hover:text-accent-600 hover:shadow-card-hover active:translate-y-0;
+  }
+
+  /* Skeleton shimmer — richer than flat pulse */
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-sand-300/70;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s linear infinite;
   }
 }
 
@@ -26,4 +143,54 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Gradient headline text */
+  .text-gradient {
+    background: linear-gradient(120deg, #d97756 20%, #e88159 50%, #a34f30 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Holographic foil sweep on hover — for MTG card images */
+  .foil-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .foil-shine::after {
+    content: '';
+    position: absolute;
+    inset: -60%;
+    z-index: 1;
+    background: linear-gradient(
+      115deg,
+      transparent 35%,
+      rgba(192, 132, 252, 0.18) 44%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(129, 140, 248, 0.18) 56%,
+      transparent 65%
+    );
+    transform: translateX(-70%) rotate(8deg);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .foil-shine:hover::after {
+    transform: translateX(70%) rotate(8deg);
+  }
+
+  /* Entrance stagger helpers */
+  .stagger > * {
+    animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger > *:nth-child(6) { animation-delay: 250ms; }
+  .stagger > *:nth-child(7) { animation-delay: 300ms; }
+  .stagger > *:nth-child(8) { animation-delay: 350ms; }
+  .stagger > *:nth-child(9) { animation-delay: 400ms; }
+  .stagger > *:nth-child(10) { animation-delay: 450ms; }
+  .stagger > *:nth-child(n + 11) { animation-delay: 500ms; }
 }

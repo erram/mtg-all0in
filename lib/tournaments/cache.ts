@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { scrapeFormatPage, scrapeEventDecks, scrapeDeckList, scrapePlayerCount, type EventDeckScrapeResult } from './mtgtop8'
 import { scrapeMetaSnapshot } from './mtggoldfish'
@@ -5,7 +6,7 @@ import { getCardsByNames, getCardImageUri } from '@/lib/scryfall/client'
 import type { Format } from './types'
 
 // Formats where Goldfish has dedicated metagame pages (better data than MTGTop8)
-const GOLDFISH_META_FORMATS: Format[] = ['modern', 'pioneer', 'standard', 'duel-commander']
+const GOLDFISH_META_FORMATS: Format[] = ['modern', 'pioneer', 'standard', 'duel-commander', 'pauper']
 
 const EVENT_TTL_MS = 6 * 60 * 60 * 1000   // 6 hours
 const META_TTL_MS = 12 * 60 * 60 * 1000   // 12 hours
@@ -87,7 +88,85 @@ async function refreshFormat(format: Format): Promise<void> {
       }
     }
 
-    // Eagerly fetch player counts for events that don't have one yet (up to 10, sequential to respect rate limits)
+    // Backfills run in the background — never block page rendering
+    void backfillPlayerCounts(format)
+    void backfillDecklists(format)
+  } catch (e) {
+    console.error('[tournaments] format refresh failed:', e)
+  }
+}
+
+/**
+ * Gradually populates decklists so the Builder fills up without anyone
+ * having to click through every deck page. Each format refresh processes
+ * a small batch: scrape missing event decks, then enrich a few decklists.
+ */
+async function backfillDecklists(format: Format): Promise<void> {
+  try {
+    // 1. Events with no decks yet → scrape their deck lists (also fixes player counts)
+    const emptyEvents = await prisma.tournamentEvent.findMany({
+      where: { format, decks: { none: {} } },
+      orderBy: [{ date: 'desc' }, { name: 'asc' }],
+      take: 3,
+      select: { id: true, externalId: true },
+    })
+    for (const ev of emptyEvents) {
+      await refreshDecks(ev.id, ev.externalId, format)
+      await new Promise((r) => setTimeout(r, 250))
+    }
+
+    // 2. Decks without an enriched decklist → scrape + attach Scryfall images.
+    // Filter enriched-status in JS: Prisma JSON-path null handling is fiddly.
+    const candidates = await prisma.tournamentDeck.findMany({
+      where: { event: { format }, externalUrl: { not: null } },
+      orderBy: { event: { date: 'desc' } },
+      take: 60,
+      select: { id: true, externalUrl: true, decklist: true },
+    })
+    const pending = candidates
+      .filter((d) => {
+        const dl = d.decklist as { enriched?: boolean } | null
+        return !dl?.enriched
+      })
+      .slice(0, 5)
+
+    for (const deck of pending) {
+      try {
+        const parsed = await scrapeDeckList(deck.externalUrl!)
+        if (parsed.mainboard.length === 0 && parsed.sideboard.length === 0) continue
+
+        const allNames = Array.from(new Set(
+          [...parsed.mainboard, ...parsed.sideboard].map((c) => c.name),
+        ))
+        const cardMap = await getCardsByNames(allNames)
+
+        const enrich = (c: { name: string; qty: number }) => {
+          const card = cardMap.get(c.name.toLowerCase())
+          return { ...c, img: card ? getCardImageUri(card) : null }
+        }
+
+        await prisma.tournamentDeck.update({
+          where: { id: deck.id },
+          data: {
+            decklist: {
+              mainboard: parsed.mainboard.map(enrich),
+              sideboard: parsed.sideboard.map(enrich),
+              enriched: cardMap.size > 0,
+            } as object,
+          },
+        })
+      } catch (e) {
+        console.error('[tournaments] decklist backfill failed for deck:', deck.id, e)
+      }
+      await new Promise((r) => setTimeout(r, 250))
+    }
+  } catch (e) {
+    console.error('[tournaments] decklist backfill failed:', e)
+  }
+}
+
+async function backfillPlayerCounts(format: Format): Promise<void> {
+  try {
     const missing = await prisma.tournamentEvent.findMany({
       where: { format, playerCount: null },
       orderBy: [{ date: 'desc' }, { name: 'asc' }],
@@ -102,8 +181,36 @@ async function refreshFormat(format: Format): Promise<void> {
       await new Promise((r) => setTimeout(r, 150))
     }
   } catch (e) {
-    console.error('[tournaments] format refresh failed:', e)
+    console.error('[tournaments] player count backfill failed:', e)
   }
+}
+
+// Archetype art crops for event pages — cached 24h per event so repeat
+// views never hit Scryfall. Cheap to store: just name → URL pairs.
+export async function getArchetypeArt(
+  eventId: string,
+  names: string[],
+): Promise<Record<string, string | null>> {
+  if (names.length === 0) return {}
+
+  const cached = unstable_cache(
+    async (): Promise<Record<string, string | null>> => {
+      const cardMap = await getCardsByNames(names)
+      const result: Record<string, string | null> = {}
+      for (const name of names) {
+        const card = cardMap.get(name.toLowerCase())
+        result[name.toLowerCase()] =
+          card?.image_uris?.art_crop ??
+          card?.card_faces?.[0]?.image_uris?.art_crop ??
+          null
+      }
+      return result
+    },
+    ['archetype-art', eventId],
+    { revalidate: 86400 },
+  )
+
+  return cached()
 }
 
 async function refreshDecks(eventId: string, externalId: string, format: Format): Promise<void> {
@@ -215,44 +322,60 @@ export type DeckWithImages = {
   archetype: string | null
   playerName: string | null
   externalUrl: string | null
+  event: { id: string; name: string; format: string } | null
   mainboard: CardWithImage[]
   sideboard: CardWithImage[]
 }
 
+type StoredCard = { name: string; qty: number; img?: string | null }
+type StoredDecklist = { mainboard?: StoredCard[]; sideboard?: StoredCard[]; enriched?: boolean }
+
 export async function getDeckWithImages(deckId: string): Promise<DeckWithImages | null> {
-  const deck = await prisma.tournamentDeck.findUnique({ where: { id: deckId } })
+  const deck = await prisma.tournamentDeck.findUnique({
+    where: { id: deckId },
+    include: { event: { select: { id: true, name: true, format: true } } },
+  })
   if (!deck) return null
 
   // If no decklist yet, scrape it now
   if (!deck.decklist && deck.externalUrl) {
     try {
       const parsed = await scrapeDeckList(deck.externalUrl)
-      await prisma.tournamentDeck.update({
-        where: { id: deckId },
-        data: { decklist: parsed as object },
-      })
       deck.decklist = parsed as unknown as typeof deck.decklist
     } catch (e) {
       console.error('[tournaments] decklist scrape failed:', e)
     }
   }
 
-  const raw = deck.decklist as { mainboard?: { name: string; qty: number }[]; sideboard?: { name: string; qty: number }[] } | null
-  const mainboard = raw?.mainboard ?? []
-  const sideboard = raw?.sideboard ?? []
+  const raw = deck.decklist as StoredDecklist | null
+  let mainboard = raw?.mainboard ?? []
+  let sideboard = raw?.sideboard ?? []
 
-  // Batch-fetch images from Scryfall
-  const allNames = Array.from(new Set([...mainboard, ...sideboard].map((c) => c.name)))
-  const cardMap = allNames.length > 0 ? await getCardsByNames(allNames) : new Map()
+  // Enrich with Scryfall images exactly once, then persist — later views skip Scryfall entirely
+  if (raw && !raw.enriched && (mainboard.length > 0 || sideboard.length > 0)) {
+    const allNames = Array.from(new Set([...mainboard, ...sideboard].map((c) => c.name)))
+    const cardMap = await getCardsByNames(allNames)
 
-  function toCardWithImage(c: { name: string; qty: number }): CardWithImage {
-    const card = cardMap.get(c.name.toLowerCase())
-    return {
-      name: c.name,
-      qty: c.qty,
-      imageUri: card ? getCardImageUri(card) : null,
+    const enrich = (c: StoredCard): StoredCard => {
+      const card = cardMap.get(c.name.toLowerCase())
+      return { ...c, img: card ? getCardImageUri(card) : null }
     }
+    mainboard = mainboard.map(enrich)
+    sideboard = sideboard.map(enrich)
+
+    // Only mark enriched if Scryfall actually answered — otherwise retry next view
+    const enriched = cardMap.size > 0
+    await prisma.tournamentDeck.update({
+      where: { id: deckId },
+      data: { decklist: { mainboard, sideboard, enriched } as object },
+    })
   }
+
+  const toCardWithImage = (c: StoredCard): CardWithImage => ({
+    name: c.name,
+    qty: c.qty,
+    imageUri: c.img ?? null,
+  })
 
   return {
     id: deck.id,
@@ -260,6 +383,7 @@ export async function getDeckWithImages(deckId: string): Promise<DeckWithImages 
     archetype: deck.archetype,
     playerName: deck.playerName,
     externalUrl: deck.externalUrl,
+    event: deck.event,
     mainboard: mainboard.map(toCardWithImage),
     sideboard: sideboard.map(toCardWithImage),
   }

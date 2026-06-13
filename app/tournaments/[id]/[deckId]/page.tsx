@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getDeckWithImages } from '@/lib/tournaments/cache'
-import { prisma } from '@/lib/prisma'
 import type { CardWithImage } from '@/lib/tournaments/cache'
 
 interface PageProps {
@@ -76,13 +75,7 @@ export default async function DeckPage({ params }: PageProps) {
   const deck = await getDeckWithImages(params.deckId)
   if (!deck) notFound()
 
-  // Load parent event for breadcrumb
-  const dbDeck = await prisma.tournamentDeck.findUnique({
-    where: { id: params.deckId },
-    include: { event: true },
-  })
-
-  const event = dbDeck?.event
+  const event = deck.event
 
   const mainTotal = deck.mainboard.reduce((s, c) => s + c.qty, 0)
   const sbTotal = deck.sideboard.reduce((s, c) => s + c.qty, 0)

@@ -47,20 +47,24 @@ async function MetaSidebar({ format }: { format: Format }) {
   }
 
   return (
-    <div className="rounded-lg border border-sand-200 bg-white">
+    <div className="surface animate-fade-up overflow-hidden">
       <div className="flex items-center justify-between border-b border-sand-100 px-4 py-3">
         <h2 className="text-sm font-semibold text-sand-900">Meta Breakdown</h2>
         <span className="text-xs text-sand-400">via {sourceLabel}</span>
       </div>
       <ul className="divide-y divide-sand-100">
         {archetypes.map((a, i) => (
-          <li key={i} className="flex items-center gap-3 px-4 py-2.5">
-            <span className="w-8 text-right text-xs font-medium text-sand-500">
+          <li key={i} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-sand-50">
+            <span className="w-8 text-right text-xs font-medium tabular-nums text-sand-500">
               {a.share.toFixed(1)}%
             </span>
             <div
-              className="h-1.5 rounded-full bg-accent-400"
-              style={{ width: `${Math.min(100, (a.share / archetypes[0].share) * 100)}%`, minWidth: 4 }}
+              className="h-1.5 animate-bar-grow rounded-full bg-gradient-to-r from-accent-400 to-accent-500"
+              style={{
+                width: `${Math.min(100, (a.share / archetypes[0].share) * 100)}%`,
+                minWidth: 4,
+                animationDelay: `${i * 40}ms`,
+              }}
             />
             <span className="flex-1 truncate text-sm text-sand-800">
               {a.sampleDeckUrl ? (
@@ -120,21 +124,21 @@ async function EventList({ format, venue, page }: { format: Format; venue: Venue
       )}
 
       {events.length === 0 ? (
-        <div className="rounded-lg border border-sand-200 bg-sand-50 py-10 text-center">
+        <div className="rounded-xl border border-sand-200 bg-sand-50 py-10 text-center">
           <p className="text-sand-500">No {venue !== 'both' ? venue : ''} events found.</p>
         </div>
       ) : (
-        <>
+        <div className="stagger space-y-2">
           {events.map((ev) => {
             const online = isOnlineEvent(ev.name, ev.location)
             return (
               <Link
                 key={ev.id}
                 href={`/tournaments/${ev.id}`}
-                className={`flex items-center justify-between rounded-lg border bg-white px-4 py-3 transition-colors hover:bg-opacity-80 ${
+                className={`flex items-center justify-between rounded-xl border bg-white px-4 py-3 shadow-card transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:shadow-card-hover ${
                   online
-                    ? 'border-blue-200 hover:border-blue-300 hover:bg-blue-50'
-                    : 'border-sand-200 hover:border-accent-300 hover:bg-accent-50'
+                    ? 'border-blue-200 hover:border-blue-300'
+                    : 'border-sand-200 hover:border-accent-300'
                 }`}
               >
                 <div className="min-w-0 flex items-center gap-2">
@@ -202,7 +206,7 @@ async function EventList({ format, venue, page }: { format: Format; venue: Venue
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   )
@@ -221,7 +225,9 @@ export default function TournamentsPage({ searchParams }: PageProps) {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-sand-900">Tournament Statistics</h1>
+      <h1 className="mb-6 animate-fade-up text-2xl font-bold tracking-tight text-sand-900">
+        Tournament Statistics
+      </h1>
 
       <FormatTabs current={format} />
 
@@ -237,7 +243,7 @@ export default function TournamentsPage({ searchParams }: PageProps) {
             fallback={
               <div className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="h-14 animate-pulse rounded-lg bg-sand-200" />
+                  <div key={i} className="h-14 skeleton" />
                 ))}
               </div>
             }
@@ -254,7 +260,7 @@ export default function TournamentsPage({ searchParams }: PageProps) {
             fallback={
               <div className="space-y-1.5">
                 {Array.from({ length: 10 }).map((_, i) => (
-                  <div key={i} className="h-8 animate-pulse rounded bg-sand-200" />
+                  <div key={i} className="h-8 skeleton rounded" />
                 ))}
               </div>
             }

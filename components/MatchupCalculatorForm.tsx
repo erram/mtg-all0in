@@ -248,7 +248,17 @@ export function MatchupCalculatorForm() {
               {result.matchups.map((m) => (
                 <div key={m.opponent} className="px-4 py-3">
                   <div className="flex items-start justify-between mb-1.5">
-                    <span className="text-sm font-medium text-sand-900 truncate mr-2">{m.opponent}</span>
+                    <span className="text-sm font-medium text-sand-900 truncate mr-2">
+                      {m.opponent}
+                      {m.personal && (
+                        <span
+                          className="ml-1.5 rounded bg-accent-50 px-1.5 py-px text-[10px] font-semibold text-accent-700"
+                          title={`Blended with your record: ${m.personal.wins}W–${m.personal.losses}L${m.personal.draws ? `–${m.personal.draws}D` : ''} (model alone: ${Math.round(m.modelWinRate * 100)}%)`}
+                        >
+                          ★ {m.personal.wins}–{m.personal.losses}
+                        </span>
+                      )}
+                    </span>
                     <span className={`text-[10px] shrink-0 ${CONFIDENCE_COLOR[m.confidence]}`}>
                       {CONFIDENCE_LABEL[m.confidence]}
                     </span>
@@ -256,6 +266,7 @@ export function MatchupCalculatorForm() {
                   <WinRateBar rate={m.winRate} />
                   <p className="mt-0.5 text-[10px] text-sand-400">
                     {m.opponentAppearances} appearance{m.opponentAppearances !== 1 ? 's' : ''} on record
+                    {m.personal && ' · blended with your logged games'}
                   </p>
                 </div>
               ))}

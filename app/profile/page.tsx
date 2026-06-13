@@ -46,7 +46,7 @@ export default function ProfilePage() {
       <main className="mx-auto max-w-3xl px-4 py-10">
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded-xl bg-sand-200" />
+            <div key={i} className="h-20 skeleton rounded-xl" />
           ))}
         </div>
       </main>

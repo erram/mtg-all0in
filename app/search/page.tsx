@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { unstable_cache } from 'next/cache'
 import { searchCards, ScryfallApiError } from '@/lib/scryfall'
 import { SearchForm } from '@/components/SearchForm'
 import { CardGrid } from '@/components/CardGrid'
@@ -7,9 +8,17 @@ interface SearchPageProps {
   searchParams: { q?: string; page?: string }
 }
 
+// Identical searches within 30 min are served from cache instead of re-hitting Scryfall
+const cachedSearch = (query: string, page: number) =>
+  unstable_cache(
+    () => searchCards(query, page),
+    ['scryfall-search', query.toLowerCase(), String(page)],
+    { revalidate: 1800 },
+  )()
+
 async function SearchResults({ query, page }: { query: string; page: number }) {
   try {
-    const results = await searchCards(query, page)
+    const results = await cachedSearch(query, page)
     if (results.data.length === 0) {
       return <p className="py-12 text-center text-sand-500">No cards found for &ldquo;{query}&rdquo;.</p>
     }
@@ -61,7 +70,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
           fallback={
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {Array.from({ length: 10 }).map((_, i) => (
-                <div key={i} className="animate-pulse rounded-lg bg-sand-200 aspect-[5/7]" />
+                <div key={i} className="skeleton aspect-[5/7]" />
               ))}
             </div>
           }

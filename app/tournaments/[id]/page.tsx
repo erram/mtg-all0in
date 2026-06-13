@@ -1,20 +1,12 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getEventById } from '@/lib/tournaments/cache'
-import { getCardsByNames } from '@/lib/scryfall/client'
+import { getEventById, getArchetypeArt } from '@/lib/tournaments/cache'
 import { FORMAT_LABELS } from '@/lib/tournaments/types'
 import type { Format } from '@/lib/tournaments/types'
-import type { ScryfallCard } from '@/lib/scryfall/types'
 
 interface PageProps {
   params: { id: string }
-}
-
-function artCrop(card: ScryfallCard): string | null {
-  if (card.image_uris?.art_crop) return card.image_uris.art_crop
-  if (card.card_faces?.[0]?.image_uris?.art_crop) return card.card_faces[0].image_uris.art_crop
-  return null
 }
 
 function RankBadge({ rank }: { rank: number | null }) {
@@ -35,9 +27,9 @@ export default async function EventPage({ params }: PageProps) {
   const { event, stale } = await getEventById(params.id)
   if (!event) notFound()
 
-  // Batch-fetch art crops for all unique archetype names
+  // Art crops are cached 24h per event — only the first view hits Scryfall
   const names = Array.from(new Set(event.decks.map((d) => d.archetype).filter(Boolean) as string[]))
-  const cardMap = names.length > 0 ? await getCardsByNames(names) : new Map<string, ScryfallCard>()
+  const artMap = await getArchetypeArt(event.id, names)
 
   const formatLabel = FORMAT_LABELS[event.format as Format] ?? event.format
 
@@ -75,8 +67,7 @@ export default async function EventPage({ params }: PageProps) {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {event.decks.map((deck) => {
-            const card = deck.archetype ? cardMap.get(deck.archetype.toLowerCase()) : undefined
-            const art = card ? artCrop(card) : null
+            const art = deck.archetype ? artMap[deck.archetype.toLowerCase()] ?? null : null
 
             return (
               <Link

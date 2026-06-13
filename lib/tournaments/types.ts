@@ -1,12 +1,13 @@
-export type Format = 'modern' | 'pioneer' | 'standard' | 'duel-commander'
+export type Format = 'modern' | 'pioneer' | 'standard' | 'duel-commander' | 'pauper'
 
-export const FORMATS: Format[] = ['modern', 'pioneer', 'standard', 'duel-commander']
+export const FORMATS: Format[] = ['modern', 'pioneer', 'standard', 'duel-commander', 'pauper']
 
 export const FORMAT_LABELS: Record<Format, string> = {
   modern: 'Modern',
   pioneer: 'Pioneer',
   standard: 'Standard',
   'duel-commander': 'Duel Commander',
+  pauper: 'Pauper',
 }
 
 export interface ScrapedEvent {
