@@ -18,7 +18,10 @@ async function fetchHtml(url: string): Promise<string> {
     next: { revalidate: 0 },
   })
   if (!res.ok) throw new Error(`mtgtop8 fetch failed: ${res.status} ${url}`)
-  return res.text()
+  // MTGTop8 serves ISO-8859-1; decode explicitly so accented names
+  // (Compétitif, Næstved, …) don't turn into U+FFFD replacement chars.
+  const buf = await res.arrayBuffer()
+  return new TextDecoder('iso-8859-1').decode(buf)
 }
 
 function parseDate(raw: string): Date {

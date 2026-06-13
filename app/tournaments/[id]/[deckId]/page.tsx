@@ -8,8 +8,6 @@ interface PageProps {
   params: { id: string; deckId: string }
 }
 
-const PLACEHOLDER = 'https://cards.scryfall.io/normal/back/0/0/0aeebaf5-8c7d-4636-9e82-8c27447861f7.jpg'
-
 function CardStack({ card }: { card: CardWithImage }) {
   const multi = card.qty > 1
 
@@ -30,14 +28,23 @@ function CardStack({ card }: { card: CardWithImage }) {
           />
         )}
         <div className="relative rounded-lg overflow-hidden shadow-md transition-transform group-hover:-translate-y-1 group-hover:shadow-xl" style={{ zIndex: 2 }}>
-          <Image
-            src={card.imageUri ?? PLACEHOLDER}
-            alt={card.name}
-            width={130}
-            height={181}
-            className="block"
-            unoptimized
-          />
+          {card.imageUri ? (
+            <Image
+              src={card.imageUri}
+              alt={card.name}
+              width={130}
+              height={181}
+              className="block"
+              unoptimized
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center rounded-lg border border-sand-300 bg-sand-100 p-2 text-center text-[11px] font-medium leading-tight text-sand-500"
+              style={{ width: 130, height: 181 }}
+            >
+              {card.name}
+            </div>
+          )}
         </div>
 
         {/* Quantity badge */}
