@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-13T15:40:45Z",
-  "changed_file": "lib/tournaments/cache.ts",
+  "timestamp": "2026-06-13T15:51:29Z",
+  "changed_file": "app/tournaments/[id]/[deckId]/page.tsx",
   "test_command": "npx vitest run --reporter=verbose",
   "related_test": "",
   "recommendation": "テストの実行を推奨します"
