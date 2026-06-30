@@ -35,6 +35,13 @@ const mockList: ScryfallList = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // The client's rate limiter sleeps via setTimeout between calls. Fire the
+  // callback immediately so tests don't depend on real wall-clock timing,
+  // which keeps them deterministic and fast across CI runners.
+  vi.stubGlobal('setTimeout', ((fn: () => void) => {
+    fn()
+    return 0 as unknown as ReturnType<typeof setTimeout>
+  }) as typeof setTimeout)
 })
 
 describe('searchCards', () => {
