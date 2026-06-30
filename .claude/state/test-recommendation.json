@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-13T15:51:29Z",
-  "changed_file": "app/tournaments/[id]/[deckId]/page.tsx",
+  "timestamp": "2026-06-17T06:30:55Z",
+  "changed_file": "lib/tournaments/__tests__/mtgtop8.test.ts",
   "test_command": "npx vitest run --reporter=verbose",
   "related_test": "",
   "recommendation": "テストの実行を推奨します"
