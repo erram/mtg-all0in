@@ -154,3 +154,4 @@
 {"file":"lib/__tests__/builder.test.ts","action":"Write","timestamp":"2026-06-17T06:30:14Z","important":true}
 {"file":"lib/analyzer/__tests__/stats.test.ts","action":"Write","timestamp":"2026-06-17T06:30:18Z","important":true}
 {"file":"lib/tournaments/__tests__/mtgtop8.test.ts","action":"Write","timestamp":"2026-06-17T06:30:55Z","important":true}
+{"file":"README.md","action":"Edit","timestamp":"2026-06-30T11:34:14Z","important":false}

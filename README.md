@@ -138,13 +138,23 @@ Migrations run automatically on every deploy via `prisma migrate deploy` in `ver
 
 ## Testing
 
-Unit tests cover the Scryfall API client (8 tests):
+Unit tests (106 tests) cover the core `lib/` logic:
+
+| Module | Coverage |
+|--------|----------|
+| `lib/scryfall/` | Scryfall API client (8) |
+| `lib/builder.ts` | Collection-aware deck buildability (16) |
+| `lib/analyzer/parser.ts` | Decklist parsing + commander detection (23) |
+| `lib/analyzer/stats.ts` | Deck statistics (26) |
+| `lib/analyzer/matchup.ts` | Archetype matchup scoring (11) |
+| `lib/analyzer/upgrade.ts` | Budget upgrade optimization (9) |
+| `lib/tournaments/mtgtop8.ts` | MTGTop8 scraper (13) |
 
 ```bash
 pnpm test
 ```
 
-Tests use Vitest with `globalThis.fetch` mocked — no network calls.
+Tests mock external dependencies (Prisma, the Scryfall client, and `globalThis.fetch`) — no network or database calls.
 
 ## Project structure
 
