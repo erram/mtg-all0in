@@ -2,8 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
-// ISR: serve instantly from static cache, refresh listings at most every 60s
-export const revalidate = 60
+// Latest listings are live marketplace data, so render per-request rather than
+// prerendering at build time (which would require a database connection).
+export const dynamic = 'force-dynamic'
 
 const CONDITIONS: Record<string, string> = {
   NM: 'Near Mint',

@@ -148,3 +148,4 @@
 {"file":"lib/tournaments/cache.ts","action":"Edit","timestamp":"2026-06-13T15:40:45Z","important":false}
 {"file":"lib/tournaments/mtgtop8.ts","action":"Edit","timestamp":"2026-06-13T15:50:26Z","important":false}
 {"file":"app/tournaments/[id]/[deckId]/page.tsx","action":"Edit","timestamp":"2026-06-13T15:51:29Z","important":false}
+{"file":"app/page.tsx","action":"Edit","timestamp":"2026-06-30T13:53:54Z","important":false}
