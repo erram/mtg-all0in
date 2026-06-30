@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { optimizeBudget } from '@/lib/analyzer/upgrade'
 import type { MissingCard } from '@/lib/builder'
 
@@ -106,7 +107,13 @@ describe('optimizeBudget', () => {
   })
 
   it('normalizes card names when looking up impact (front face, lowercase)', () => {
-    const missing = [mc({ name: 'Fable of the Mirror-Breaker // Reflection of Kiki-Rikki', priceUsd: 5, missing: 1 })]
+    const missing = [
+      mc({
+        name: 'Fable of the Mirror-Breaker // Reflection of Kiki-Rikki',
+        priceUsd: 5,
+        missing: 1,
+      }),
+    ]
     const impacts = new Map<string, number>([['fable of the mirror-breaker', 0.8]])
     const plan = optimizeBudget(missing, impacts, 100)
     expect(plan.picks[0].impact).toBe(0.8)

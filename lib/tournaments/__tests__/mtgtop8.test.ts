@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import {
-  scrapeFormatPage,
-  scrapeEventDecks,
-  scrapePlayerCount,
-  scrapeDeckList,
-} from '../mtgtop8'
+import { scrapeFormatPage, scrapeEventDecks, scrapePlayerCount, scrapeDeckList } from '../mtgtop8'
 
 /**
  * The source decodes responses via `res.arrayBuffer()` + TextDecoder('iso-8859-1').
@@ -110,10 +105,7 @@ describe('scrapeFormatPage', () => {
   it('requests the correct format-coded URL', async () => {
     mockFetchHtml(formatHtml)
     await scrapeFormatPage('pauper')
-    expect(fetch).toHaveBeenCalledWith(
-      'https://www.mtgtop8.com/format?f=PAU',
-      expect.any(Object)
-    )
+    expect(fetch).toHaveBeenCalledWith('https://www.mtgtop8.com/format?f=PAU', expect.any(Object))
   })
 
   it('decodes ISO-8859-1 accented characters correctly', async () => {
@@ -151,7 +143,9 @@ describe('scrapePlayerCount', () => {
   it('returns undefined when the fetch fails', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 500, arrayBuffer: async () => latin1Bytes('') })
+      vi
+        .fn()
+        .mockResolvedValue({ ok: false, status: 500, arrayBuffer: async () => latin1Bytes('') })
     )
     const count = await scrapePlayerCount('12345', 'modern')
     expect(count).toBeUndefined()
@@ -237,7 +231,9 @@ describe('scrapeDeckList', () => {
 
   it('parses mainboard and sideboard cards with quantities', async () => {
     mockFetchHtml(deckHtml)
-    const { mainboard, sideboard } = await scrapeDeckList('https://www.mtgtop8.com/event?e=1&d=2&f=MO')
+    const { mainboard, sideboard } = await scrapeDeckList(
+      'https://www.mtgtop8.com/event?e=1&d=2&f=MO'
+    )
 
     expect(mainboard).toEqual([
       { name: 'Lightning Bolt', qty: 4 },

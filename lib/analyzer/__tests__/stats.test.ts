@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { calculateStats } from '@/lib/analyzer/stats'
 import type { CardEntry } from '@/lib/analyzer/stats'
 import type { ScryfallCard } from '@/lib/scryfall/types'
@@ -6,7 +7,6 @@ function makeCard(overrides: Partial<ScryfallCard> & { name: string }): Scryfall
   return {
     object: 'card',
     id: `id-${overrides.name}`,
-    name: overrides.name,
     set: 'tst',
     set_name: 'Test Set',
     collector_number: '1',
@@ -40,7 +40,7 @@ describe('calculateStats - totals and land/spell counting', () => {
         entry(makeCard({ name: 'Forest', type_line: 'Basic Land — Forest' }), 10),
         entry(makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1 }), 4),
       ],
-      null,
+      null
     )
     expect(stats.totalCards).toBe(14)
   })
@@ -52,7 +52,7 @@ describe('calculateStats - totals and land/spell counting', () => {
         entry(makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1 }), 3),
         entry(makeCard({ name: 'Bear', type_line: 'Creature — Bear', cmc: 2 }), 2),
       ],
-      null,
+      null
     )
     expect(stats.landCount).toBe(12)
     expect(stats.spellCount).toBe(5)
@@ -68,7 +68,7 @@ describe('calculateStats - mana value and curve', () => {
         entry(makeCard({ name: 'C', type_line: 'Creature — X', cmc: 3 }), 1),
         entry(makeCard({ name: 'Forest', type_line: 'Land', cmc: 0 }), 5),
       ],
-      null,
+      null
     )
     // (1 + 2 + 3) / 3 = 2
     expect(stats.avgManaValue).toBe(2)
@@ -81,7 +81,7 @@ describe('calculateStats - mana value and curve', () => {
         entry(makeCard({ name: 'B', type_line: 'Instant', cmc: 2 }), 1),
         entry(makeCard({ name: 'C', type_line: 'Instant', cmc: 2 }), 1),
       ],
-      null,
+      null
     )
     // 5 / 3 = 1.666... -> 1.67
     expect(stats.avgManaValue).toBe(1.67)
@@ -90,7 +90,7 @@ describe('calculateStats - mana value and curve', () => {
   it('returns avg mana value 0 when there are no non-land spells', () => {
     const stats = calculateStats(
       [entry(makeCard({ name: 'Forest', type_line: 'Land', cmc: 0 }), 5)],
-      null,
+      null
     )
     expect(stats.avgManaValue).toBe(0)
   })
@@ -101,7 +101,7 @@ describe('calculateStats - mana value and curve', () => {
         entry(makeCard({ name: 'OneDrop', type_line: 'Instant', cmc: 1 }), 4),
         entry(makeCard({ name: 'ThreeDrop', type_line: 'Creature — X', cmc: 3 }), 2),
       ],
-      null,
+      null
     )
     expect(stats.curve).toHaveLength(8)
     expect(stats.curve.map((c) => c.cmc)).toEqual([0, 1, 2, 3, 4, 5, 6, 7])
@@ -117,7 +117,7 @@ describe('calculateStats - mana value and curve', () => {
         entry(makeCard({ name: 'Eldrazi', type_line: 'Creature — Eldrazi', cmc: 10 }), 1),
         entry(makeCard({ name: 'BigSpell', type_line: 'Sorcery', cmc: 8 }), 2),
       ],
-      null,
+      null
     )
     expect(stats.curve[7].count).toBe(3)
     expect(stats.curve[7].cards.sort()).toEqual(['BigSpell', 'Eldrazi'])
@@ -131,7 +131,7 @@ describe('calculateStats - color identity', () => {
         entry(makeCard({ name: 'A', color_identity: ['G', 'W'] })),
         entry(makeCard({ name: 'B', color_identity: ['B'] })),
       ],
-      null,
+      null
     )
     expect(stats.colorIdentity).toEqual(['W', 'B', 'G'])
   })
@@ -145,7 +145,7 @@ describe('calculateStats - type breakdown', () => {
         entry(makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1 }), 2),
         entry(makeCard({ name: 'Forest', type_line: 'Basic Land — Forest', cmc: 0 }), 10),
       ],
-      null,
+      null
     )
     expect(stats.typeBreakdown).toEqual({ Creature: 3, Instant: 2, Land: 10 })
   })
@@ -153,8 +153,13 @@ describe('calculateStats - type breakdown', () => {
   it('uses the first type in priority order for multi-type cards', () => {
     // Artifact Creature -> Creature wins (Creature is earlier in the list)
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Construct', type_line: 'Artifact Creature — Construct', cmc: 4 }), 1)],
-      null,
+      [
+        entry(
+          makeCard({ name: 'Construct', type_line: 'Artifact Creature — Construct', cmc: 4 }),
+          1
+        ),
+      ],
+      null
     )
     expect(stats.typeBreakdown).toEqual({ Creature: 1 })
   })
@@ -164,10 +169,24 @@ describe('calculateStats - interaction detection', () => {
   it('detects removal via "destroy target" and "deals N damage to any target"', () => {
     const stats = calculateStats(
       [
-        entry(makeCard({ name: 'Murder', type_line: 'Instant', cmc: 3, oracle_text: 'Destroy target creature.' })),
-        entry(makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1, oracle_text: 'Lightning Bolt deals 3 damage to any target.' })),
+        entry(
+          makeCard({
+            name: 'Murder',
+            type_line: 'Instant',
+            cmc: 3,
+            oracle_text: 'Destroy target creature.',
+          })
+        ),
+        entry(
+          makeCard({
+            name: 'Bolt',
+            type_line: 'Instant',
+            cmc: 1,
+            oracle_text: 'Lightning Bolt deals 3 damage to any target.',
+          })
+        ),
       ],
-      null,
+      null
     )
     expect(stats.interaction.removal.count).toBe(2)
     expect(stats.interaction.removal.cards.sort()).toEqual(['Bolt', 'Murder'])
@@ -175,8 +194,17 @@ describe('calculateStats - interaction detection', () => {
 
   it('detects counterspells via "counter target spell"', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Counterspell', type_line: 'Instant', cmc: 2, oracle_text: 'Counter target spell.' }))],
-      null,
+      [
+        entry(
+          makeCard({
+            name: 'Counterspell',
+            type_line: 'Instant',
+            cmc: 2,
+            oracle_text: 'Counter target spell.',
+          })
+        ),
+      ],
+      null
     )
     expect(stats.interaction.counterspells.count).toBe(1)
     expect(stats.interaction.counterspells.cards).toEqual(['Counterspell'])
@@ -184,24 +212,51 @@ describe('calculateStats - interaction detection', () => {
 
   it('detects discard via "target player discards"', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Mind Rot', type_line: 'Sorcery', cmc: 3, oracle_text: 'Target player discards two cards.' }))],
-      null,
+      [
+        entry(
+          makeCard({
+            name: 'Mind Rot',
+            type_line: 'Sorcery',
+            cmc: 3,
+            oracle_text: 'Target player discards two cards.',
+          })
+        ),
+      ],
+      null
     )
     expect(stats.interaction.discard.count).toBe(1)
   })
 
   it('detects board wipes via "destroy all"', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Wrath', type_line: 'Sorcery', cmc: 4, oracle_text: 'Destroy all creatures.' }))],
-      null,
+      [
+        entry(
+          makeCard({
+            name: 'Wrath',
+            type_line: 'Sorcery',
+            cmc: 4,
+            oracle_text: 'Destroy all creatures.',
+          })
+        ),
+      ],
+      null
     )
     expect(stats.interaction.boardwipes.count).toBe(1)
   })
 
   it('detects bounce via "return target creature to"', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Boomerang', type_line: 'Instant', cmc: 2, oracle_text: 'Return target permanent to its owner’s hand.' }))],
-      null,
+      [
+        entry(
+          makeCard({
+            name: 'Boomerang',
+            type_line: 'Instant',
+            cmc: 2,
+            oracle_text: 'Return target permanent to its owner’s hand.',
+          })
+        ),
+      ],
+      null
     )
     expect(stats.interaction.bounce.count).toBe(1)
   })
@@ -231,10 +286,24 @@ describe('calculateStats - theme detection', () => {
   it('detects a theme only when at least two cards (by qty) match', () => {
     const stats = calculateStats(
       [
-        entry(makeCard({ name: 'Divination', type_line: 'Sorcery', cmc: 3, oracle_text: 'Draw two cards.' })),
-        entry(makeCard({ name: 'Opt', type_line: 'Instant', cmc: 1, oracle_text: 'Scry 1. Draw a card.' })),
+        entry(
+          makeCard({
+            name: 'Divination',
+            type_line: 'Sorcery',
+            cmc: 3,
+            oracle_text: 'Draw two cards.',
+          })
+        ),
+        entry(
+          makeCard({
+            name: 'Opt',
+            type_line: 'Instant',
+            cmc: 1,
+            oracle_text: 'Scry 1. Draw a card.',
+          })
+        ),
       ],
-      null,
+      null
     )
     const draw = stats.themes.find((t) => t.key === 'draw')
     expect(draw).toBeDefined()
@@ -244,18 +313,37 @@ describe('calculateStats - theme detection', () => {
   it('does not surface a theme matched by only one card', () => {
     const stats = calculateStats(
       [
-        entry(makeCard({ name: 'Divination', type_line: 'Sorcery', cmc: 3, oracle_text: 'Draw two cards.' })),
-        entry(makeCard({ name: 'Bear', type_line: 'Creature — Bear', cmc: 2, oracle_text: 'Vanilla.' })),
+        entry(
+          makeCard({
+            name: 'Divination',
+            type_line: 'Sorcery',
+            cmc: 3,
+            oracle_text: 'Draw two cards.',
+          })
+        ),
+        entry(
+          makeCard({ name: 'Bear', type_line: 'Creature — Bear', cmc: 2, oracle_text: 'Vanilla.' })
+        ),
       ],
-      null,
+      null
     )
     expect(stats.themes.find((t) => t.key === 'draw')).toBeUndefined()
   })
 
   it('counts theme by quantity, so a single 2-copy card qualifies', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Divination', type_line: 'Sorcery', cmc: 3, oracle_text: 'Draw two cards.' }), 2)],
-      null,
+      [
+        entry(
+          makeCard({
+            name: 'Divination',
+            type_line: 'Sorcery',
+            cmc: 3,
+            oracle_text: 'Draw two cards.',
+          }),
+          2
+        ),
+      ],
+      null
     )
     const draw = stats.themes.find((t) => t.key === 'draw')
     expect(draw).toBeDefined()
@@ -266,10 +354,21 @@ describe('calculateStats - theme detection', () => {
   it('sorts themes by count descending and caps at 6', () => {
     const stats = calculateStats(
       [
-        entry(makeCard({ name: 'Draw1', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw a card.' }), 5),
-        entry(makeCard({ name: 'Token1', type_line: 'Sorcery', cmc: 2, oracle_text: 'Create a 1/1 token.' }), 2),
+        entry(
+          makeCard({ name: 'Draw1', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw a card.' }),
+          5
+        ),
+        entry(
+          makeCard({
+            name: 'Token1',
+            type_line: 'Sorcery',
+            cmc: 2,
+            oracle_text: 'Create a 1/1 token.',
+          }),
+          2
+        ),
       ],
-      null,
+      null
     )
     expect(stats.themes.length).toBeLessThanOrEqual(6)
     expect(stats.themes[0].key).toBe('draw')
@@ -281,7 +380,7 @@ describe('calculateStats - synergy score', () => {
   it('is 0 when there are no spells', () => {
     const stats = calculateStats(
       [entry(makeCard({ name: 'Forest', type_line: 'Land', cmc: 0 }), 5)],
-      null,
+      null
     )
     expect(stats.synergyScore).toBe(0)
   })
@@ -291,10 +390,14 @@ describe('calculateStats - synergy score', () => {
     // round(2/2 * 100 * 1.5) = 150 -> capped at 100
     const stats = calculateStats(
       [
-        entry(makeCard({ name: 'Draw1', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw a card.' })),
-        entry(makeCard({ name: 'Draw2', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw two cards.' })),
+        entry(
+          makeCard({ name: 'Draw1', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw a card.' })
+        ),
+        entry(
+          makeCard({ name: 'Draw2', type_line: 'Sorcery', cmc: 2, oracle_text: 'Draw two cards.' })
+        ),
       ],
-      null,
+      null
     )
     expect(stats.synergyScore).toBe(100)
     expect(stats.synergyScore).toBeGreaterThanOrEqual(0)
@@ -305,8 +408,12 @@ describe('calculateStats - synergy score', () => {
 describe('calculateStats - commander', () => {
   it('returns null commander and null commanderSynergyScore when name is null', () => {
     const stats = calculateStats(
-      [entry(makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1, oracle_text: 'Draw a card.' }))],
-      null,
+      [
+        entry(
+          makeCard({ name: 'Bolt', type_line: 'Instant', cmc: 1, oracle_text: 'Draw a card.' })
+        ),
+      ],
+      null
     )
     expect(stats.commander).toBeNull()
     expect(stats.commanderSynergyScore).toBeNull()
@@ -333,12 +440,19 @@ describe('calculateStats - commander', () => {
       cmc: 4,
       oracle_text: 'Create a 1/1 token. Whenever a token enters, draw nothing.',
     })
-    const tokenMaker1 = makeCard({ name: 'Maker1', type_line: 'Sorcery', cmc: 3, oracle_text: 'Create a 2/2 token.' })
-    const tokenMaker2 = makeCard({ name: 'Maker2', type_line: 'Sorcery', cmc: 4, oracle_text: 'Create a 1/1 token copy.' })
-    const stats = calculateStats(
-      [entry(cmd), entry(tokenMaker1), entry(tokenMaker2)],
-      'Token Lord',
-    )
+    const tokenMaker1 = makeCard({
+      name: 'Maker1',
+      type_line: 'Sorcery',
+      cmc: 3,
+      oracle_text: 'Create a 2/2 token.',
+    })
+    const tokenMaker2 = makeCard({
+      name: 'Maker2',
+      type_line: 'Sorcery',
+      cmc: 4,
+      oracle_text: 'Create a 1/1 token copy.',
+    })
+    const stats = calculateStats([entry(cmd), entry(tokenMaker1), entry(tokenMaker2)], 'Token Lord')
     expect(stats.commanderSynergyScore).not.toBeNull()
     expect(stats.commanderSynergyScore!).toBeGreaterThan(0)
     expect(stats.commanderSynergyScore!).toBeLessThanOrEqual(100)

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-17T06:30:55Z",
-  "changed_file": "lib/tournaments/__tests__/mtgtop8.test.ts",
+  "timestamp": "2026-06-30T11:36:13Z",
+  "changed_file": "lib/analyzer/__tests__/stats.test.ts",
   "test_command": "npx vitest run --reporter=verbose",
   "related_test": "",
   "recommendation": "テストの実行を推奨します"

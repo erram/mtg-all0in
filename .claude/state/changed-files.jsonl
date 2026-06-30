@@ -155,3 +155,7 @@
 {"file":"lib/analyzer/__tests__/stats.test.ts","action":"Write","timestamp":"2026-06-17T06:30:18Z","important":true}
 {"file":"lib/tournaments/__tests__/mtgtop8.test.ts","action":"Write","timestamp":"2026-06-17T06:30:55Z","important":true}
 {"file":"README.md","action":"Edit","timestamp":"2026-06-30T11:34:14Z","important":false}
+{"file":"lib/analyzer/__tests__/matchup.test.ts","action":"Edit","timestamp":"2026-06-30T11:35:36Z","important":true}
+{"file":"lib/analyzer/__tests__/parser.test.ts","action":"Edit","timestamp":"2026-06-30T11:35:51Z","important":true}
+{"file":"lib/analyzer/__tests__/stats.test.ts","action":"Edit","timestamp":"2026-06-30T11:35:53Z","important":true}
+{"file":"lib/analyzer/__tests__/upgrade.test.ts","action":"Edit","timestamp":"2026-06-30T11:35:54Z","important":true}

@@ -37,13 +37,15 @@ describe('normalizeCardName', () => {
   })
 
   it('keeps only the front face of a DFC split on " // "', () => {
-    expect(normalizeCardName('Fable of the Mirror-Breaker // Reflection of Kiki-Rik'))
-      .toBe('fable of the mirror-breaker')
+    expect(normalizeCardName('Fable of the Mirror-Breaker // Reflection of Kiki-Rik')).toBe(
+      'fable of the mirror-breaker'
+    )
   })
 
   it('lowercases and trims the extracted front face together', () => {
-    expect(normalizeCardName('  Delver of Secrets // Insectile Aberration  '))
-      .toBe('delver of secrets')
+    expect(normalizeCardName('  Delver of Secrets // Insectile Aberration  ')).toBe(
+      'delver of secrets'
+    )
   })
 
   it('returns a plain name unchanged aside from casing', () => {
@@ -81,9 +83,7 @@ describe('getOwnedCounts', () => {
   it('queries collection entries for the given user', async () => {
     findMany.mockResolvedValue([])
     await getOwnedCounts('user-42')
-    expect(findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: 'user-42' } })
-    )
+    expect(findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-42' } }))
   })
 
   it('returns an empty map when the collection is empty', async () => {
@@ -149,9 +149,7 @@ describe('getDeckCompletion', () => {
       },
       event: { id: 'e1', name: 'Event', format: 'modern' },
     })
-    findMany.mockResolvedValue([
-      { quantity: 1, card: { name: 'Counterspell' } },
-    ])
+    findMany.mockResolvedValue([{ quantity: 1, card: { name: 'Counterspell' } }])
 
     const result = await getDeckCompletion('user-1', 'd1')
 
@@ -176,9 +174,7 @@ describe('getDeckCompletion', () => {
       },
       event: { id: 'e1', name: 'Event', format: 'modern' },
     })
-    findMany.mockResolvedValue([
-      { quantity: 4, card: { name: 'Lightning Bolt' } },
-    ])
+    findMany.mockResolvedValue([{ quantity: 4, card: { name: 'Lightning Bolt' } }])
 
     const result = await getDeckCompletion('user-1', 'd1')
 
@@ -232,9 +228,7 @@ describe('getDeckCompletion', () => {
       },
       event: { id: 'e1', name: 'Event', format: 'modern' },
     })
-    findMany.mockResolvedValue([
-      { quantity: 4, card: { name: 'Goblin Guide' } },
-    ])
+    findMany.mockResolvedValue([{ quantity: 4, card: { name: 'Goblin Guide' } }])
 
     const result = await getDeckCompletion('user-1', 'd1')
 

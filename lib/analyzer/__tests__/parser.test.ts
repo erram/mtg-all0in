@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { parseDecklist, detectCommander } from '@/lib/analyzer/parser'
 
 describe('parseDecklist', () => {
@@ -21,10 +22,8 @@ describe('parseDecklist', () => {
   })
 
   it('assigns cards under a Commander section header', () => {
-    const result = parseDecklist('Commander\n1 Atraxa, Praetors\' Voice')
-    expect(result).toEqual([
-      { name: "Atraxa, Praetors' Voice", qty: 1, section: 'commander' },
-    ])
+    const result = parseDecklist("Commander\n1 Atraxa, Praetors' Voice")
+    expect(result).toEqual([{ name: "Atraxa, Praetors' Voice", qty: 1, section: 'commander' }])
   })
 
   it('handles Commander section header with trailing colon', () => {
