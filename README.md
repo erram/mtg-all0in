@@ -11,16 +11,16 @@ A Magic: The Gathering collection tracker. Search cards, view real-time Scryfall
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript (strict) |
-| Database | PostgreSQL + Prisma 7 |
-| Auth | NextAuth.js v4 (CredentialsProvider) |
-| Styling | Tailwind CSS |
-| Package manager | pnpm 10 |
-| Testing | Vitest |
-| Deployment | Vercel |
+| Layer           | Technology                           |
+| --------------- | ------------------------------------ |
+| Framework       | Next.js 14 (App Router)              |
+| Language        | TypeScript (strict)                  |
+| Database        | PostgreSQL + Prisma 7                |
+| Auth            | NextAuth.js v4 (CredentialsProvider) |
+| Styling         | Tailwind CSS                         |
+| Package manager | pnpm 10                              |
+| Testing         | Vitest                               |
+| Deployment      | Vercel                               |
 
 ## Architecture
 
@@ -99,15 +99,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Available scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start dev server |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm test` | Run unit tests |
-| `pnpm lint` | ESLint |
-| `pnpm typecheck` | TypeScript type check |
-| `pnpm prisma studio` | Open Prisma Studio (DB GUI) |
+| Script                    | Description                  |
+| ------------------------- | ---------------------------- |
+| `pnpm dev`                | Start dev server             |
+| `pnpm build`              | Production build             |
+| `pnpm start`              | Start production server      |
+| `pnpm test`               | Run unit tests               |
+| `pnpm lint`               | ESLint                       |
+| `pnpm typecheck`          | TypeScript type check        |
+| `pnpm prisma studio`      | Open Prisma Studio (DB GUI)  |
 | `pnpm prisma migrate dev` | Create and apply a migration |
 
 ## Deployment (Vercel)
@@ -116,11 +116,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Set these in the Vercel dashboard under **Settings → Environment Variables**:
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string (e.g. from Neon or Supabase) |
-| `NEXTAUTH_SECRET` | Random secret — `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | Production URL, e.g. `https://mtg-vault.vercel.app` |
+| Variable          | Description                                               |
+| ----------------- | --------------------------------------------------------- |
+| `DATABASE_URL`    | PostgreSQL connection string (e.g. from Neon or Supabase) |
+| `NEXTAUTH_SECRET` | Random secret — `openssl rand -base64 32`                 |
+| `NEXTAUTH_URL`    | Production URL, e.g. `https://mtg-vault.vercel.app`       |
 
 Migrations run automatically on every deploy via `prisma migrate deploy` in `vercel.json`.
 
@@ -138,13 +138,23 @@ Migrations run automatically on every deploy via `prisma migrate deploy` in `ver
 
 ## Testing
 
-Unit tests cover the Scryfall API client (8 tests):
+Unit tests (106 tests) cover the core `lib/` logic:
+
+| Module                       | Coverage                                    |
+| ---------------------------- | ------------------------------------------- |
+| `lib/scryfall/`              | Scryfall API client (8)                     |
+| `lib/builder.ts`             | Collection-aware deck buildability (16)     |
+| `lib/analyzer/parser.ts`     | Decklist parsing + commander detection (23) |
+| `lib/analyzer/stats.ts`      | Deck statistics (26)                        |
+| `lib/analyzer/matchup.ts`    | Archetype matchup scoring (11)              |
+| `lib/analyzer/upgrade.ts`    | Budget upgrade optimization (9)             |
+| `lib/tournaments/mtgtop8.ts` | MTGTop8 scraper (13)                        |
 
 ```bash
 pnpm test
 ```
 
-Tests use Vitest with `globalThis.fetch` mocked — no network calls.
+Tests mock external dependencies (Prisma, the Scryfall client, and `globalThis.fetch`) — no network or database calls.
 
 ## Project structure
 

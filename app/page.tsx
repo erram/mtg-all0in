@@ -14,15 +14,20 @@ const CONDITIONS: Record<string, string> = {
 }
 
 async function getLatestListings() {
-  return prisma.listing.findMany({
-    where: { active: true },
-    orderBy: { createdAt: 'desc' },
-    take: 10,
-    include: {
-      card: true,
-      user: { select: { email: true } },
-    },
-  })
+  try {
+    return await prisma.listing.findMany({
+      where: { active: true },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        card: true,
+        user: { select: { email: true } },
+      },
+    })
+  } catch {
+    // DB may be unreachable during build-time prerender; ISR refreshes at runtime
+    return []
+  }
 }
 
 function timeAgo(date: Date) {
