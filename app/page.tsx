@@ -15,15 +15,21 @@ const CONDITIONS: Record<string, string> = {
 }
 
 async function getLatestListings() {
-  return prisma.listing.findMany({
-    where: { active: true },
-    orderBy: { createdAt: 'desc' },
-    take: 10,
-    include: {
-      card: true,
-      user: { select: { email: true } },
-    },
-  })
+  try {
+    return await prisma.listing.findMany({
+      where: { active: true },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        card: true,
+        user: { select: { email: true } },
+      },
+    })
+  } catch {
+    // The database may be unreachable (e.g. during CI build or a brief outage);
+    // the landing page should still render with no listings rather than crash.
+    return []
+  }
 }
 
 function timeAgo(date: Date) {
