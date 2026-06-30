@@ -2,8 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
-// ISR: serve instantly from static cache, refresh listings at most every 60s
-export const revalidate = 60
+// Latest listings are live marketplace data, so render per-request rather than
+// prerendering at build time (which would require a database connection).
+export const dynamic = 'force-dynamic'
 
 const CONDITIONS: Record<string, string> = {
   NM: 'Near Mint',
@@ -14,15 +15,21 @@ const CONDITIONS: Record<string, string> = {
 }
 
 async function getLatestListings() {
-  return prisma.listing.findMany({
-    where: { active: true },
-    orderBy: { createdAt: 'desc' },
-    take: 10,
-    include: {
-      card: true,
-      user: { select: { email: true } },
-    },
-  })
+  try {
+    return await prisma.listing.findMany({
+      where: { active: true },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        card: true,
+        user: { select: { email: true } },
+      },
+    })
+  } catch {
+    // The database may be unreachable (e.g. during CI build or a brief outage);
+    // the landing page should still render with no listings rather than crash.
+    return []
+  }
 }
 
 function timeAgo(date: Date) {
